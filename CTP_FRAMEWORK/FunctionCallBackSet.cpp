@@ -8,10 +8,12 @@ using namespace std;
 list<string> FunctionCallBackSet::lstAllInstruments;
 bool FunctionCallBackSet::bIsGetInst;
 string FunctionCallBackSet::strAllIns;
+HANDLE FunctionCallBackSet::h_connected;
 CRITICAL_SECTION FunctionCallBackSet::f_csInstrument;
+
 void __stdcall FunctionCallBackSet::OnConnect(void* pApi, CThostFtdcRspUserLoginField *pRspUserLogin, ConnectionStatus result)
 {
-
+    SetEvent(h_connected);
 }
 
 void __stdcall FunctionCallBackSet::OnDisconnect(void* pApi, CThostFtdcRspInfoField *pRspInfo, ConnectionStatus step)
@@ -51,7 +53,7 @@ void __stdcall FunctionCallBackSet::OnRspQryDepthMarketData(void* pTraderApi, CT
 
 void __stdcall FunctionCallBackSet::OnRspQryInstrument(void* pTraderApi, CThostFtdcInstrumentField *pInstrument, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
-    CLock cl(&f_csInstrument);
+    //CLock cl(&f_csInstrument);
     bIsGetInst = true;
 //     cout << "合约名：" << pInstrument->InstrumentID;
 //     string aa = pInstrument->InstrumentID;
@@ -61,6 +63,11 @@ void __stdcall FunctionCallBackSet::OnRspQryInstrument(void* pTraderApi, CThostF
     strAllIns += pInstrument->InstrumentID;
     strAllIns += ';';
     lstAllInstruments.push_back(string(pInstrument->InstrumentID));
+    
+    
+//     mexEvalString("OnRspQryInstrument");
+    mexCallMATLAB(0, NULL, 0, NULL, "OnRspQryInstrument");
+    //Sleep(1);
 //     cout << "  开始时间：" << pInstrument->CreateDate;
 //     cout << "  结束时间：" << pInstrument->ExpireDate << endl;
 }
@@ -103,6 +110,12 @@ void __stdcall FunctionCallBackSet::OnRspQryTradingAccount(void* pTraderApi, CTh
 void __stdcall FunctionCallBackSet::OnRtnDepthMarketData(void* pMdUserApi, CThostFtdcDepthMarketDataField *pDepthMarketData)
 {
 //     mexPrintf("%lf\n", pDepthMarketData->LastPrice);
+    
+    
+    
+    
+    mexCallMATLAB(0, NULL, 0, NULL, "OnRtnMarketData");
+    
 }
 
 void __stdcall FunctionCallBackSet::OnRtnInstrumentStatus(void* pTraderApi, CThostFtdcInstrumentStatusField *pInstrumentStatus)

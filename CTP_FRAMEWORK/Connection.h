@@ -9,6 +9,7 @@ class Connection
 public:
     Connection()
     {
+        
         msgQueue = new CTPMsgQueue();
         callbackSet = new FunctionCallBackSet();
         msgQueue->RegisterCallback(callbackSet);
@@ -17,6 +18,7 @@ public:
         td = new TraderApi();
         td->RegisterMsgQueue(msgQueue);
         msgQueue->StartThread();
+        
     }
     ~Connection()
     {
@@ -24,6 +26,7 @@ public:
         msgQueue->Clear();
         td->Disconnect();
         md->Disconnect();
+        
         delete td;
         delete md;
         delete callbackSet;
@@ -59,7 +62,7 @@ public:
     MdUserApi *md;
     TraderApi *td;
     FunctionCallBackSet *callbackSet;
-
+    
 
 };
 

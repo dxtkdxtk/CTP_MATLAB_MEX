@@ -15,14 +15,18 @@ public:
     static list<string> lstAllInstruments;
     static string strAllIns;
     static CRITICAL_SECTION f_csInstrument;
+    static HANDLE h_connected;
     FunctionCallBackSet()
     {
+        bIsGetInst = false;
+        h_connected = CreateEvent(NULL, TRUE, FALSE, NULL);
         lstAllInstruments.clear();
         strAllIns = "";
         InitializeCriticalSection(&f_csInstrument);
     }
     ~FunctionCallBackSet()
     {
+        CloseHandle(h_connected);
         DeleteCriticalSection(&f_csInstrument);
     }
 

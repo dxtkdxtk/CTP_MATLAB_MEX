@@ -35,16 +35,10 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, mxArray *prhs[])
     {
         case 1:
         {
-            if(nrhs != 2)
-            {
-                mexErrMsgTxt("参数个数必须为2");
-            }
             if(NULL == Con)
             {
                 Con = new Connection();
                 CheckIsConnect();
-                if(!mxIsChar(prhs[1]))
-                        mexErrMsgTxt("服务器字段为字符串");
                 Con->readInifile(".\\server.ini", mxArrayToString(prhs[1]));
                 Con->td->Connect(Con->streamPath, 
                         Con->tdServer, 
@@ -57,6 +51,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, mxArray *prhs[])
                         Con->brokerId, 
                         Con->investorId, 
                         Con->password);
+                WaitForSingleObject(Con->callbackSet->h_connected, INFINITE);
                 mexPrintf("连接行情交易端成功\n");
             }
             else
@@ -72,18 +67,38 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, mxArray *prhs[])
             break;
         }
         case 3:
+        {
             CheckIsConnect();
+            string inst = mxArrayToString(prhs[1]);
+            if(inst.size() == 0)
+            {
+                if(Con->callbackSet->bIsGetInst)
+                    inst = Con->callbackSet->strAllIns;
+                else
+                    mexWarnMsgTxt("未查询所有合约，不能使用订阅全部合约");
+            }
+            Con->md->Subscribe(inst);
+            mexPrintf("订阅完成\n");
             break;
+        }
         case 4:
+        {
             CheckIsConnect();
+            string inst = mxArrayToString(prhs[1]);
+            Con->td->ReqQryInstrument(inst);
             break;
+        }
         case 5:
+        {
             CheckIsConnect();
             break;
-        case 6:
-            CheckIsConnect();
-            break;
+        }
             
+        case 6:
+        {
+            CheckIsConnect();
+            break;
+        }   
             
             
         default:
