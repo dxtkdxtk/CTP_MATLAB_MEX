@@ -1,5 +1,6 @@
 #ifndef STASTRUCT_H
 #define STATRUCT_H
+
 #include "MdUserApi.h"
 #include "TraderApi.h"
 using namespace std;
@@ -12,6 +13,7 @@ public:
         
         msgQueue = new CTPMsgQueue();
         callbackSet = new FunctionCallBackSet();
+        
         msgQueue->RegisterCallback(callbackSet);
         md = new MdUserApi();
         md->RegisterMsgQueue(msgQueue);
@@ -52,6 +54,10 @@ public:
     }
     char tmp[105];
     CTPMsgQueue *msgQueue;
+    FunctionCallBackSet *callbackSet;
+    MdUserApi *md;
+    TraderApi *td;
+    
     string streamPath;
     string mdServer;
     string tdServer;
@@ -59,9 +65,8 @@ public:
     string investorId;
     string password;
     string instrumentId;
-    MdUserApi *md;
-    TraderApi *td;
-    FunctionCallBackSet *callbackSet;
+    
+    
     
 
 };

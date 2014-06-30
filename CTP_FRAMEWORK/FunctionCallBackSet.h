@@ -3,8 +3,10 @@
 
 #include "CTPStruct.h"
 #include "ThostTraderApi\ThostFtdcUserApiStruct.h"
+#include "CLock.h"
 #include <list>
 #include <Windows.h>
+#include <map>
 using namespace std;
 class FunctionCallBackSet
 {
@@ -12,27 +14,36 @@ class FunctionCallBackSet
     
 public:
     static bool bIsGetInst;
+    
+    static CRITICAL_SECTION f_csInstrument;
     static list<string> lstAllInstruments;
     static string strAllIns;
-    static CRITICAL_SECTION f_csInstrument;
+    
     static HANDLE h_connected;
+    
+    static CRITICAL_SECTION m_csInstPrice;
+    static map<string, CThostFtdcDepthMarketDataField> m_instPrice;
     FunctionCallBackSet()
     {
         bIsGetInst = false;
         h_connected = CreateEvent(NULL, TRUE, FALSE, NULL);
         lstAllInstruments.clear();
         strAllIns = "";
+        m_instPrice.clear();
         InitializeCriticalSection(&f_csInstrument);
+        InitializeCriticalSection(&m_csInstPrice);
     }
     ~FunctionCallBackSet()
     {
         CloseHandle(h_connected);
         DeleteCriticalSection(&f_csInstrument);
+        DeleteCriticalSection(&m_csInstPrice);
     }
 
-    string GetAllIns()
+    CThostFtdcDepthMarketDataField &GetInstrumentInfo(string ins)
     {
-        return strAllIns;
+        CLock cl(&m_csInstPrice);
+        return m_instPrice[ins];
     }
     static void __stdcall OnConnect(void* pApi, CThostFtdcRspUserLoginField *pRspUserLogin, ConnectionStatus result);//连接后的结果状态
     static void __stdcall OnDisconnect(void* pApi, CThostFtdcRspInfoField *pRspInfo, ConnectionStatus step);//出错时所处的状态
