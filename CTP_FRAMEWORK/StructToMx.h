@@ -37,3 +37,15 @@ mxArray *GetMarketData(const CThostFtdcDepthMarketDataField &data)
             mxSetField(result, 0, "ActionDay", mxCreateString(data.ActionDay));
             return result;
 }
+
+mxArray *GetOrderData(vector<CThostFtdcOrderField> &orders)
+{
+    mxArray *result;
+    int size = orders.size();
+    mwSize dims[2] = {1, size};
+    const char *field_names[] = {"BrokerID", "InvestorID", "InstrumentID", "OrderRef", "UserID", "Direction", 
+                                                   "CombOffsetFlag", "LimitPrice", "ExchangeID", "OrderSysID", 
+                                                   "OrderStatus", "FrontID", "SessionID"};
+    result = mxCreateStructArray(2, dims, sizeof(field_names)/sizeof(*field_names), field_names);
+    return result;
+}

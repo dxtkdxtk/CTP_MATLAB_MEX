@@ -10,10 +10,6 @@
 
 using namespace std;
 
-void mexExit(void)
-{
-    mexPrintf("exit now \n");
-}
 Connection *Con;
 
 void CheckIsConnect()
@@ -27,8 +23,8 @@ bool isNull(mxArray *tmp)
 }
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, mxArray *prhs[])
 {
+    //为保证速度，未添加安全判断
     int choise = (int)mxGetScalar(prhs[0]);
-    mexAtExit(mexExit);
     switch(choise)
     {
         
@@ -89,8 +85,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, mxArray *prhs[])
                 Con->md->Subscribe(inst);
                 mexPrintf("订阅完成\n");
             }
-            
-            
             break;
         }
         
@@ -109,17 +103,30 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, mxArray *prhs[])
             CheckIsConnect();
             string inst = mxArrayToString(prhs[1]);
             plhs[0] = GetMarketData(Con->callbackSet->GetInstrumentInfo(inst));
-//             mexPrintf("%lf\n", res.LastPrice);
-//             plhs[0] = mxCreateDoubleScalar(res.LastPrice);
             break;
         }
-            
+        
+        //下单操作
         case 6:
         {
             CheckIsConnect();
+            string inst = mxArrayToString(prhs[1]);
+            string direction = mxArrayToString(prhs[2]);
+            string offsetFlag = mxArrayToString(prhs[3]);
+            double volume = mxGetScalar(prhs[4]);
+            double price = mxGetScalar(prhs[5]);
+            Con->td->ReqOrderInsert(inst, direction[0], offsetFlag.c_str(), "1", (int)volume, price, 
+                    THOST_FTDC_OPT_LimitPrice, THOST_FTDC_TC_GFD, THOST_FTDC_CC_Immediately, 
+                    0, THOST_FTDC_VC_AV);
             break;
         }   
-            
+        
+        case 7:
+        {
+            CheckIsConnect();
+            plhs[0] = GetOrderData(Con->callbackSet->GetOrderInfo());
+            break;
+        }
         
         default:
             mexWarnMsgTxt("没有找到相关操作");

@@ -5,13 +5,22 @@
 #include "mex.h"
 using namespace std;
 
-list<string> FunctionCallBackSet::lstAllInstruments;
+
 bool FunctionCallBackSet::bIsGetInst;
-string FunctionCallBackSet::strAllIns;
+
 HANDLE FunctionCallBackSet::h_connected;
+
 CRITICAL_SECTION FunctionCallBackSet::f_csInstrument;
+list<string> FunctionCallBackSet::lstAllInstruments;
+string FunctionCallBackSet::strAllIns;
+
 CRITICAL_SECTION FunctionCallBackSet::m_csInstPrice;
 map<string, CThostFtdcDepthMarketDataField> FunctionCallBackSet::m_instPrice;
+
+vector<CThostFtdcOrderField> FunctionCallBackSet::v_orders;
+CRITICAL_SECTION FunctionCallBackSet::v_csOrders;
+set<string> FunctionCallBackSet::orderRef;
+
 void __stdcall FunctionCallBackSet::OnConnect(void* pApi, CThostFtdcRspUserLoginField *pRspUserLogin, ConnectionStatus result)
 {
     SetEvent(h_connected);
@@ -113,7 +122,6 @@ void __stdcall FunctionCallBackSet::OnRtnDepthMarketData(void* pMdUserApi, CThos
     CLock cl(&m_csInstPrice);
     
     memcpy(&m_instPrice[string(pDepthMarketData->InstrumentID)], pDepthMarketData, sizeof(CThostFtdcDepthMarketDataField));
-    mexCallMATLAB(0, NULL, 0, NULL, "dispMarket");
     
 }
 
@@ -124,7 +132,13 @@ void __stdcall FunctionCallBackSet::OnRtnInstrumentStatus(void* pTraderApi, CTho
 
 void __stdcall FunctionCallBackSet::OnRtnOrder(void* pTraderApi, CThostFtdcOrderField *pOrder)
 {
-    
+    CLock cl(&v_csOrders);
+    string ref = pOrder->OrderRef;
+    if(orderRef.count(ref) == 0)
+    {
+        orderRef.insert(ref);
+        v_orders.push_back(*pOrder);
+    }
 }
 
 void __stdcall FunctionCallBackSet::OnRtnTrade(void* pTraderApi, CThostFtdcTradeField *pTrade)
