@@ -6,6 +6,7 @@
 #include<string>
 #include<set>
 #include "Connection.h"
+#include "StructToMx.h"
 
 using namespace std;
 
@@ -107,41 +108,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, mxArray *prhs[])
         {
             CheckIsConnect();
             string inst = mxArrayToString(prhs[1]);
-            CThostFtdcDepthMarketDataField res = Con->callbackSet->GetInstrumentInfo(inst);
-            mwSize dims[2] = {1, 1};
-            const char *field_names[] = {"TradingDay", "InstrumentID", "LastPrice", "PreSettlementPrice",\
-                                                            "PreClosePrice", "PreOpenInterest", "OpenPrice", "HighestPrice", \
-                                                            "LowestPrice", "Volume", "OpenInterest", "ClosePrice", "SettlementPrice",\
-                                                            "UpperLimitPrice", "LowerLimitPrice", "PreDelta", "CurrDelta", "UpdateTime", \
-                                                            "BidPrice1", "BidVolume1", "AskPrice1", "AskVolume1", "AveragePrice", "ActionDay"};
-            
-                                                            
-            plhs[0] = mxCreateStructArray(2, dims, sizeof(field_names)/sizeof(*field_names), field_names);
-            mxSetField(plhs[0], 0, "TradingDay", mxCreateString(res.TradingDay));
-            mxSetField(plhs[0], 0, "InstrumentID", mxCreateString(res.InstrumentID));
-            mxSetField(plhs[0], 0, "PreSettlementPrice", mxCreateDoubleScalar(res.PreSettlementPrice));
-            mxSetField(plhs[0], 0, "PreClosePrice", mxCreateDoubleScalar(res.PreClosePrice));
-            mxSetField(plhs[0], 0, "PreOpenInterest", mxCreateDoubleScalar(res.PreOpenInterest));
-            mxSetField(plhs[0], 0, "OpenPrice", mxCreateDoubleScalar(res.OpenPrice));
-            mxSetField(plhs[0], 0, "HighestPrice", mxCreateDoubleScalar(res.HighestPrice));
-            mxSetField(plhs[0], 0, "LowestPrice", mxCreateDoubleScalar(res.LowestPrice));
-            mxSetField(plhs[0], 0, "LastPrice", mxCreateDoubleScalar(res.LastPrice));
-            
-            mxSetField(plhs[0], 0, "Volume", mxCreateDoubleScalar(res.Volume));
-            mxSetField(plhs[0], 0, "OpenInterest", mxCreateDoubleScalar(res.OpenInterest));
-            mxSetField(plhs[0], 0, "ClosePrice", mxCreateDoubleScalar(res.ClosePrice));
-            mxSetField(plhs[0], 0, "SettlementPrice", mxCreateDoubleScalar(res.SettlementPrice));
-            mxSetField(plhs[0], 0, "UpperLimitPrice", mxCreateDoubleScalar(res.UpperLimitPrice));
-            mxSetField(plhs[0], 0, "LowerLimitPrice", mxCreateDoubleScalar(res.LowerLimitPrice));
-            mxSetField(plhs[0], 0, "PreDelta", mxCreateDoubleScalar(res.PreDelta));
-            mxSetField(plhs[0], 0, "CurrDelta", mxCreateDoubleScalar(res.CurrDelta));
-            mxSetField(plhs[0], 0, "UpdateTime", mxCreateString(res.UpdateTime));
-            mxSetField(plhs[0], 0, "BidPrice1", mxCreateDoubleScalar(res.BidPrice1));
-            mxSetField(plhs[0], 0, "BidVolume1", mxCreateDoubleScalar(res.BidVolume1));
-            mxSetField(plhs[0], 0, "AskPrice1", mxCreateDoubleScalar(res.AskPrice1));
-            mxSetField(plhs[0], 0, "AskVolume1", mxCreateDoubleScalar(res.AskVolume1));
-            mxSetField(plhs[0], 0, "AveragePrice", mxCreateDoubleScalar(res.AveragePrice));
-            mxSetField(plhs[0], 0, "ActionDay", mxCreateString(res.ActionDay));
+            plhs[0] = GetMarketData(Con->callbackSet->GetInstrumentInfo(inst));
 //             mexPrintf("%lf\n", res.LastPrice);
 //             plhs[0] = mxCreateDoubleScalar(res.LastPrice);
             break;

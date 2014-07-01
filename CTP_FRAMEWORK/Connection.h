@@ -1,5 +1,5 @@
-#ifndef STASTRUCT_H
-#define STATRUCT_H
+#ifndef CONNECTION_H
+#define CONNECTION_H
 
 #include "MdUserApi.h"
 #include "TraderApi.h"

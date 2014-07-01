@@ -113,6 +113,7 @@ void __stdcall FunctionCallBackSet::OnRtnDepthMarketData(void* pMdUserApi, CThos
     CLock cl(&m_csInstPrice);
     
     memcpy(&m_instPrice[string(pDepthMarketData->InstrumentID)], pDepthMarketData, sizeof(CThostFtdcDepthMarketDataField));
+    mexCallMATLAB(0, NULL, 0, NULL, "dispMarket");
     
 }
 
