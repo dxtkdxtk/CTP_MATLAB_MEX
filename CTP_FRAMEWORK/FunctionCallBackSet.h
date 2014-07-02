@@ -35,7 +35,7 @@ public:
    //所有当前未结束有效报单
     static CRITICAL_SECTION v_csOrders;
     static vector<CThostFtdcOrderField> v_orders;
-    static set<string> orderRef;
+    static map<string, int> mapOrderRef;
     
     
     FunctionCallBackSet()
@@ -44,7 +44,7 @@ public:
         h_connected = CreateEvent(NULL, TRUE, FALSE, NULL);
         lstAllInstruments.clear();
         strAllIns = "";
-        orderRef.clear();
+        mapOrderRef.clear();
         m_instPrice.clear();
         v_orders.clear();
         InitializeCriticalSection(&f_csInstrument);

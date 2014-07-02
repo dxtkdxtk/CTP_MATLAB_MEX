@@ -6,7 +6,7 @@
 #include<string>
 #include<set>
 #include "Connection.h"
-#include "StructToMx.h"
+#include "mxStructTool.h"
 
 using namespace std;
 
@@ -121,6 +121,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, mxArray *prhs[])
             break;
         }   
         
+        //获取所有报单信息
         case 7:
         {
             CheckIsConnect();
@@ -128,6 +129,17 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, mxArray *prhs[])
             break;
         }
         
+        //撤单
+        case 8:
+        {
+            CheckIsConnect();
+            CThostFtdcOrderField order;
+            MxToOrder(order, prhs[1]);
+//             mexPrintf("%s\n", order.BrokerID);
+//             mexPrintf("%d  %d\n", order.SessionID, order.FrontID);
+            Con->td->ReqOrderAction(&order);
+            break;
+        }
         default:
             mexWarnMsgTxt("没有找到相关操作");
     

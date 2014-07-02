@@ -1,6 +1,6 @@
 function CancelOrder(order)
 %CANCELORDER ³·µ¥
-TraderMain(7, order);
+TraderMain(8, order);
 
 end
 

@@ -19,7 +19,7 @@ map<string, CThostFtdcDepthMarketDataField> FunctionCallBackSet::m_instPrice;
 
 vector<CThostFtdcOrderField> FunctionCallBackSet::v_orders;
 CRITICAL_SECTION FunctionCallBackSet::v_csOrders;
-set<string> FunctionCallBackSet::orderRef;
+map<string, int> FunctionCallBackSet::mapOrderRef;
 
 void __stdcall FunctionCallBackSet::OnConnect(void* pApi, CThostFtdcRspUserLoginField *pRspUserLogin, ConnectionStatus result)
 {
@@ -134,10 +134,21 @@ void __stdcall FunctionCallBackSet::OnRtnOrder(void* pTraderApi, CThostFtdcOrder
 {
     CLock cl(&v_csOrders);
     string ref = pOrder->OrderRef;
-    if(orderRef.count(ref) == 0)
+    if(mapOrderRef[ref] == 0)
     {
-        orderRef.insert(ref);
+        mapOrderRef[ref] = v_orders.size() + 1;
         v_orders.push_back(*pOrder);
+    }
+    //then change status
+    else
+    {
+        if(pOrder->OrderStatus == '0' || pOrder->OrderStatus == '5')
+        {
+            v_orders.erase(v_orders.begin() + mapOrderRef[ref] - 1);
+            mapOrderRef[ref] = 0;
+        }
+        else
+            v_orders[mapOrderRef[ref] - 1].OrderStatus = pOrder->OrderStatus;
     }
 }
 

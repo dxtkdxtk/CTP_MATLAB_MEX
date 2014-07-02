@@ -2,6 +2,7 @@
 #include "mex.h"
 #include "matrix.h"
 
+//获取实时合约数据
 mxArray *GetMarketData(const CThostFtdcDepthMarketDataField &data)
 {
     mwSize dims[2] = {1, 1};
@@ -38,14 +39,83 @@ mxArray *GetMarketData(const CThostFtdcDepthMarketDataField &data)
             return result;
 }
 
-mxArray *GetOrderData(vector<CThostFtdcOrderField> &orders)
+//获取当前未结束报单
+mxArray *GetOrderData(vector<CThostFtdcOrderField> &data)
 {
     mxArray *result;
-    int size = orders.size();
+    int size = data.size();
     mwSize dims[2] = {1, size};
     const char *field_names[] = {"BrokerID", "InvestorID", "InstrumentID", "OrderRef", "UserID", "Direction", 
                                                    "CombOffsetFlag", "LimitPrice", "ExchangeID", "OrderSysID", 
                                                    "OrderStatus", "FrontID", "SessionID"};
     result = mxCreateStructArray(2, dims, sizeof(field_names)/sizeof(*field_names), field_names);
+    for(int i = 0; i < size; ++i)
+    {
+        string dire;
+        dire += data[i].Direction;
+        mxSetField(result, i, "BrokerID", mxCreateString(data[i].BrokerID));
+        mxSetField(result, i, "InvestorID", mxCreateString(data[i].InvestorID));
+        mxSetField(result, i, "InstrumentID", mxCreateString(data[i].InstrumentID));
+        mxSetField(result, i, "OrderRef", mxCreateString(data[i].OrderRef));
+        mxSetField(result, i, "UserID", mxCreateString(data[i].UserID));
+        mxSetField(result, i, "Direction", mxCreateString(dire.c_str()));
+        mxSetField(result, i, "CombOffsetFlag", mxCreateString(data[i].CombOffsetFlag));
+        mxSetField(result, i, "LimitPrice", mxCreateDoubleScalar(data[i].LimitPrice));
+        mxSetField(result, i, "ExchangeID", mxCreateString(data[i].ExchangeID));
+        mxSetField(result, i, "OrderSysID", mxCreateString(data[i].OrderSysID));
+        dire = string("") + data[i].OrderStatus;
+        mxSetField(result, i, "OrderStatus", mxCreateString(dire.c_str()));
+        mxSetField(result, i, "FrontID", mxCreateDoubleScalar(data[i].FrontID));
+        mxSetField(result, i, "SessionID", mxCreateDoubleScalar(data[i].SessionID));
+    }
     return result;
+}
+
+void MxToOrder(CThostFtdcOrderField &order, mxArray *data)
+{
+    char *bufBrokerID, *bufInvestorID, *bufOrderRef, *bufExchangeID, *bufOrderSysID, *bufInstrumentID;
+    
+    mxArray *BrokerID = mxGetField(data, 0, "BrokerID");
+    mxArray *OrderRef = mxGetField(data, 0, "OrderRef");
+    mxArray *ExchangeID = mxGetField(data, 0, "ExchangeID");
+    mxArray *OrderSysID = mxGetField(data, 0, "OrderSysID");
+    mxArray *InstrumentID = mxGetField(data, 0, "InstrumentID");
+    mxArray *InvestorID = mxGetField(data, 0, "InvestorID");
+    
+    mwSize lenBrokerID = mxGetN(BrokerID)*sizeof(mxChar)+1;
+    mwSize lenOrderRef = mxGetN(OrderRef)*sizeof(mxChar)+1;
+    mwSize lenExchangeID = mxGetN(ExchangeID)*sizeof(mxChar)+1;
+    mwSize lenOrderSysID = mxGetN(OrderSysID)*sizeof(mxChar)+1;
+    mwSize lenInstrumentID = mxGetN(InstrumentID)*sizeof(mxChar)+1;
+    mwSize lenInvestorID = mxGetN(InvestorID)*sizeof(mxChar)+1;
+    
+    bufBrokerID = (char *)mxMalloc(lenBrokerID);
+    bufOrderRef = (char *)mxMalloc(lenOrderRef);
+    bufExchangeID = (char *)mxMalloc(lenExchangeID);
+    bufOrderSysID = (char *)mxMalloc(lenOrderSysID);
+    bufInstrumentID = (char *)mxMalloc(lenInstrumentID);
+    bufInvestorID = (char *)mxMalloc(lenInvestorID);
+    
+    mxGetString(BrokerID, bufBrokerID, lenBrokerID);
+    strcpy(order.BrokerID, bufBrokerID);
+    mxGetString(OrderRef, bufOrderRef, lenOrderRef);
+    strcpy(order.OrderRef, bufOrderRef);
+    mxGetString(ExchangeID, bufExchangeID, lenExchangeID);
+    strcpy(order.ExchangeID, bufExchangeID);
+    mxGetString(OrderSysID, bufOrderSysID, lenOrderSysID);
+    strcpy(order.OrderSysID, bufOrderSysID);
+    mxGetString(InstrumentID, bufInstrumentID, lenInstrumentID);
+    strcpy(order.InstrumentID, bufInstrumentID);
+    mxGetString(InvestorID, bufInvestorID, lenInvestorID);
+    strcpy(order.InvestorID, bufInvestorID);
+    
+    order.SessionID = (int)mxGetScalar(mxGetField(data, 0, "SessionID"));
+    order.FrontID = (int)mxGetScalar(mxGetField(data, 0, "FrontID"));
+    
+    mxFree(bufBrokerID);
+    mxFree(bufOrderRef);
+    mxFree(bufExchangeID);
+    mxFree(bufOrderSysID);
+    mxFree(bufInstrumentID);
+    mxFree(bufInvestorID);
 }
