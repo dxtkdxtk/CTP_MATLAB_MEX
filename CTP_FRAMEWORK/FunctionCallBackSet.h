@@ -19,18 +19,21 @@ public:
     static bool bIsGetInst;
     
     //所有合约，以分号隔开形式
-    static string strAllIns;
+    
     
     //是否连接事件
     static HANDLE h_connected;
+    static HANDLE h_hasInst;
     
-    //所有合约list
-    static CRITICAL_SECTION f_csInstrument;
-    static list<string> lstAllInstruments;
     
-    //当前合约价格
-    static CRITICAL_SECTION m_csInstPrice;
-    static map<string, CThostFtdcDepthMarketDataField> m_instPrice;
+    //当日交易所有合约基本信息
+    static CRITICAL_SECTION v_csInstrument;
+    static vector<CThostFtdcInstrumentField> v_allInstruments;
+    static string strAllIns;
+    
+    //当前合约行情信息
+    static CRITICAL_SECTION m_csInstInfo;
+    static map<string, CThostFtdcDepthMarketDataField> m_instInfo;
     
    //所有当前未结束有效报单
     static CRITICAL_SECTION v_csOrders;
@@ -43,31 +46,33 @@ public:
     FunctionCallBackSet()
     {
         bIsGetInst = false;
-        h_connected = CreateEvent(NULL, TRUE, FALSE, NULL);
-        lstAllInstruments.clear();
+        h_connected = CreateEvent(NULL, FALSE, FALSE, NULL);
+        h_hasInst = CreateEvent(NULL, FALSE, FALSE, NULL);
         strAllIns = "";
+        v_allInstruments.clear();
         mapOrderRef.clear();
-        m_instPrice.clear();
+        m_instInfo.clear();
         v_orders.clear();
         v_position.clear();
-        InitializeCriticalSection(&f_csInstrument);
-        InitializeCriticalSection(&m_csInstPrice);
+        InitializeCriticalSection(&v_csInstrument);
+        InitializeCriticalSection(&m_csInstInfo);
         InitializeCriticalSection(&v_csOrders);
         InitializeCriticalSection(&v_csPosition);
     }
     ~FunctionCallBackSet()
     {
         CloseHandle(h_connected);
-        DeleteCriticalSection(&f_csInstrument);
-        DeleteCriticalSection(&m_csInstPrice);
+        CloseHandle(h_hasInst);
+        DeleteCriticalSection(&v_csInstrument);
+        DeleteCriticalSection(&m_csInstInfo);
         DeleteCriticalSection(&v_csOrders);
         DeleteCriticalSection(&v_csPosition);
     }
 
     CThostFtdcDepthMarketDataField &GetInstrumentInfo(string ins)
     {
-        CLock cl(&m_csInstPrice);
-        return m_instPrice[ins];
+        CLock cl(&m_csInstInfo);
+        return m_instInfo[ins];
     }
     vector<CThostFtdcOrderField> &GetOrderInfo()
     {

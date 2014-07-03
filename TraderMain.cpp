@@ -15,12 +15,9 @@ Connection *Con;
 void CheckIsConnect()
 {
     if(NULL == Con)
-        mexErrMsgTxt("未连接!");
+        mexErrMsgTxt("未连接CTP!");
 }
-bool isNull(mxArray *tmp)
-{
-    return NULL == tmp;
-}
+
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, mxArray *prhs[])
 {
     //为保证速度，未添加安全判断
@@ -41,13 +38,17 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, mxArray *prhs[])
                         Con->brokerId, 
                         Con->investorId,
                         Con->password, 
-                        THOST_TERT_QUICK, "", "");
+                        THOST_TERT_RESTART, "", "");
+                
+                WaitForSingleObject(Con->callbackSet->h_connected, INFINITE);
                 Con->md->Connect(Con->streamPath, 
                         Con->mdServer, 
                         Con->brokerId, 
                         Con->investorId, 
                         Con->password);
-                WaitForSingleObject(Con->callbackSet->h_connected, INFINITE);
+                Con->td->ReqQryInstrument("");
+                Con->td->ReqQryInvestorPosition("");
+                WaitForSingleObject(Con->callbackSet->h_hasInst, INFINITE);
                 mexPrintf("连接行情交易端成功\n");
             }
             else
@@ -70,6 +71,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, mxArray *prhs[])
         {
             CheckIsConnect();
             string inst = mxArrayToString(prhs[1]);
+            mexPrintf("%s\n", inst.c_str());
             if(inst.size() == 0)
             {
                 if(Con->callbackSet->bIsGetInst)
@@ -135,8 +137,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, mxArray *prhs[])
             CheckIsConnect();
             CThostFtdcOrderField order;
             MxToOrder(order, prhs[1]);
-//             mexPrintf("%s\n", order.BrokerID);
-//             mexPrintf("%d  %d\n", order.SessionID, order.FrontID);
             Con->td->ReqOrderAction(&order);
             break;
         }
@@ -145,17 +145,15 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, mxArray *prhs[])
         case 9:
         {
             CheckIsConnect();
-            Con->callbackSet->v_position.clear();
+//             CLock cl(&Con->callbackSet->v_csPosition);
+//             Con->callbackSet->v_position.clear();
+//             Con->td->ReqQryInvestorPosition("");
+            
             plhs[0] = GetPositionData(Con->callbackSet->GetPosition());
+            
             break;
         }
         
-        //查询持仓信息
-        case 10:
-        {
-            CheckIsConnect();
-            break;
-        }
         default:
             mexWarnMsgTxt("没有找到相关操作");
     

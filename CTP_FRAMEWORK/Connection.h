@@ -4,9 +4,10 @@
 #include "MdUserApi.h"
 #include "TraderApi.h"
 using namespace std;
+//定义连接结构
 class Connection
 {
-    //定义策略使用的数据结构
+    
 public:
     Connection()
     {
