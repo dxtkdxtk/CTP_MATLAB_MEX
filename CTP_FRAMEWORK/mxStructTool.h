@@ -10,7 +10,8 @@ mxArray *GetMarketData(const CThostFtdcDepthMarketDataField &data)
                                                             "PreClosePrice", "PreOpenInterest", "OpenPrice", "HighestPrice", \
                                                             "LowestPrice", "Volume", "OpenInterest", "ClosePrice", "SettlementPrice",\
                                                             "UpperLimitPrice", "LowerLimitPrice", "PreDelta", "CurrDelta", "UpdateTime", \
-                                                            "BidPrice1", "BidVolume1", "AskPrice1", "AskVolume1", "AveragePrice", "ActionDay"};
+                                                            "BidPrice1", "BidVolume1", "AskPrice1", "AskVolume1", "AveragePrice", "ActionDay",
+                                                            "UpdateMillisec"};
             mxArray *result = mxCreateStructArray(2, dims, sizeof(field_names)/sizeof(*field_names), field_names);
             mxSetField(result, 0, "TradingDay", mxCreateString(data.TradingDay));
             mxSetField(result, 0, "InstrumentID", mxCreateString(data.InstrumentID));
@@ -36,6 +37,7 @@ mxArray *GetMarketData(const CThostFtdcDepthMarketDataField &data)
             mxSetField(result, 0, "AskVolume1", mxCreateDoubleScalar(data.AskVolume1));
             mxSetField(result, 0, "AveragePrice", mxCreateDoubleScalar(data.AveragePrice));
             mxSetField(result, 0, "ActionDay", mxCreateString(data.ActionDay));
+            mxSetField(result, 0, "UpdateMillisec", mxCreateDoubleScalar(data.UpdateMillisec));
             return result;
 }
 
@@ -118,4 +120,18 @@ void MxToOrder(CThostFtdcOrderField &order, mxArray *data)
     mxFree(bufOrderSysID);
     mxFree(bufInstrumentID);
     mxFree(bufInvestorID);
+}
+
+
+mxArray *GetPositionData(vector<CThostFtdcInvestorPositionField> &data)
+{
+    mxArray *result;
+    int size = data.size();
+    mwSize dims[2] = {1, size};
+    const char *field_names[] = {"BrokerID", "InvestorID", "InstrumentID", "OrderRef", "UserID", "Direction", 
+                                                   "CombOffsetFlag", "LimitPrice", "ExchangeID", "OrderSysID", 
+                                                   "OrderStatus", "FrontID", "SessionID"};
+    result = mxCreateStructArray(2, dims, sizeof(field_names)/sizeof(*field_names), field_names);
+    
+    return result;
 }

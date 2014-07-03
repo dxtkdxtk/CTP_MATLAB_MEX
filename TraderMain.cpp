@@ -140,6 +140,22 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, mxArray *prhs[])
             Con->td->ReqOrderAction(&order);
             break;
         }
+        
+        //获取持仓信息
+        case 9:
+        {
+            CheckIsConnect();
+            Con->callbackSet->v_position.clear();
+            plhs[0] = GetPositionData(Con->callbackSet->GetPosition());
+            break;
+        }
+        
+        //查询持仓信息
+        case 10:
+        {
+            CheckIsConnect();
+            break;
+        }
         default:
             mexWarnMsgTxt("没有找到相关操作");
     

@@ -37,7 +37,9 @@ public:
     static vector<CThostFtdcOrderField> v_orders;
     static map<string, int> mapOrderRef;
     
-    
+    //所有持仓
+    static CRITICAL_SECTION v_csPosition;
+    static vector<CThostFtdcInvestorPositionField> v_position;
     FunctionCallBackSet()
     {
         bIsGetInst = false;
@@ -47,9 +49,11 @@ public:
         mapOrderRef.clear();
         m_instPrice.clear();
         v_orders.clear();
+        v_position.clear();
         InitializeCriticalSection(&f_csInstrument);
         InitializeCriticalSection(&m_csInstPrice);
         InitializeCriticalSection(&v_csOrders);
+        InitializeCriticalSection(&v_csPosition);
     }
     ~FunctionCallBackSet()
     {
@@ -57,6 +61,7 @@ public:
         DeleteCriticalSection(&f_csInstrument);
         DeleteCriticalSection(&m_csInstPrice);
         DeleteCriticalSection(&v_csOrders);
+        DeleteCriticalSection(&v_csPosition);
     }
 
     CThostFtdcDepthMarketDataField &GetInstrumentInfo(string ins)
@@ -68,6 +73,11 @@ public:
     {
         CLock cl(&v_csOrders);
         return v_orders;
+    }
+    vector<CThostFtdcInvestorPositionField> &GetPosition()
+    {
+        CLock cl(&v_csPosition);
+        return v_position;
     }
     static void __stdcall OnConnect(void* pApi, CThostFtdcRspUserLoginField *pRspUserLogin, ConnectionStatus result);//连接后的结果状态
     static void __stdcall OnDisconnect(void* pApi, CThostFtdcRspInfoField *pRspInfo, ConnectionStatus step);//出错时所处的状态

@@ -12,5 +12,7 @@ end
 
 TraderMain(4, inst);
 
+disp('获取合约信息完成');
+
 end
 

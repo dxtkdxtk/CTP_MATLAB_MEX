@@ -21,6 +21,10 @@ vector<CThostFtdcOrderField> FunctionCallBackSet::v_orders;
 CRITICAL_SECTION FunctionCallBackSet::v_csOrders;
 map<string, int> FunctionCallBackSet::mapOrderRef;
 
+CRITICAL_SECTION FunctionCallBackSet::v_csPosition;
+vector<CThostFtdcInvestorPositionField> FunctionCallBackSet::v_position;
+    
+    
 void __stdcall FunctionCallBackSet::OnConnect(void* pApi, CThostFtdcRspUserLoginField *pRspUserLogin, ConnectionStatus result)
 {
     SetEvent(h_connected);
@@ -94,7 +98,8 @@ void __stdcall FunctionCallBackSet::OnRspQryInstrumentMarginRate(void* pTraderAp
 
 void __stdcall FunctionCallBackSet::OnRspQryInvestorPosition(void* pTraderApi, CThostFtdcInvestorPositionField *pInvestorPosition, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
-
+    CLock cl(&v_csPosition);
+    v_position.push_back(*pInvestorPosition);
 }
 
 void __stdcall FunctionCallBackSet::OnRspQryInvestorPositionDetail(void* pTraderApi, CThostFtdcInvestorPositionDetailField *pInvestorPositionDetail, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
