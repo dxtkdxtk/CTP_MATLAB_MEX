@@ -45,7 +45,7 @@ mxArray *GetMarketData(const CThostFtdcDepthMarketDataField &data)
 }
 
 //转换报单数据
-mxArray *GetOrderData(vector<CThostFtdcOrderField> &data)
+mxArray *GetOrderData(map<string, CThostFtdcOrderField> &data)
 {
     mxArray *result;
     int size = data.size();
@@ -54,24 +54,27 @@ mxArray *GetOrderData(vector<CThostFtdcOrderField> &data)
                                                    "CombOffsetFlag", "LimitPrice", "ExchangeID", "OrderSysID", 
                                                    "OrderStatus", "FrontID", "SessionID"};
     result = mxCreateStructArray(2, dims, sizeof(field_names)/sizeof(*field_names), field_names);
-    for(int i = 0; i < size; ++i)
+    map<string, CThostFtdcOrderField>::iterator iter;
+    int i = 0;
+    for(iter = data.begin(); iter != data.end(); ++iter)
     {
         string tmp;
-        mxSetField(result, i, "BrokerID", mxCreateString(data[i].BrokerID));
-        mxSetField(result, i, "InvestorID", mxCreateString(data[i].InvestorID));
-        mxSetField(result, i, "InstrumentID", mxCreateString(data[i].InstrumentID));
-        mxSetField(result, i, "OrderRef", mxCreateString(data[i].OrderRef));
-        mxSetField(result, i, "UserID", mxCreateString(data[i].UserID));
-        tmp = string("") + data[i].Direction;
+        mxSetField(result, i, "BrokerID", mxCreateString(iter->second.BrokerID));
+        mxSetField(result, i, "InvestorID", mxCreateString(iter->second.InvestorID));
+        mxSetField(result, i, "InstrumentID", mxCreateString(iter->second.InstrumentID));
+        mxSetField(result, i, "OrderRef", mxCreateString(iter->second.OrderRef));
+        mxSetField(result, i, "UserID", mxCreateString(iter->second.UserID));
+        tmp = string("") + iter->second.Direction;
         mxSetField(result, i, "Direction", mxCreateString(tmp.c_str()));
-        mxSetField(result, i, "CombOffsetFlag", mxCreateString(data[i].CombOffsetFlag));
-        mxSetField(result, i, "LimitPrice", mxCreateDoubleScalar(data[i].LimitPrice));
-        mxSetField(result, i, "ExchangeID", mxCreateString(data[i].ExchangeID));
-        mxSetField(result, i, "OrderSysID", mxCreateString(data[i].OrderSysID));
-        tmp = string("") + data[i].OrderStatus;
+        mxSetField(result, i, "CombOffsetFlag", mxCreateString(iter->second.CombOffsetFlag));
+        mxSetField(result, i, "LimitPrice", mxCreateDoubleScalar(iter->second.LimitPrice));
+        mxSetField(result, i, "ExchangeID", mxCreateString(iter->second.ExchangeID));
+        mxSetField(result, i, "OrderSysID", mxCreateString(iter->second.OrderSysID));
+        tmp = string("") + iter->second.OrderStatus;
         mxSetField(result, i, "OrderStatus", mxCreateString(tmp.c_str()));
-        mxSetField(result, i, "FrontID", mxCreateDoubleScalar(data[i].FrontID));
-        mxSetField(result, i, "SessionID", mxCreateDoubleScalar(data[i].SessionID));
+        mxSetField(result, i, "FrontID", mxCreateDoubleScalar(iter->second.FrontID));
+        mxSetField(result, i, "SessionID", mxCreateDoubleScalar(iter->second.SessionID));
+        ++i;
     }
     return result;
 }

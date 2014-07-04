@@ -35,9 +35,8 @@ public:
     static map<string, CThostFtdcDepthMarketDataField> m_marketData;
     
    //所有当前未结束有效报单
-    static CRITICAL_SECTION v_csOrders;
-    static vector<CThostFtdcOrderField> v_orders;
-    static map<string, int> mapOrderRef;
+    static CRITICAL_SECTION m_csOrders;
+    static map<string, CThostFtdcOrderField> m_orders;
     
     //所有持仓
     static CRITICAL_SECTION v_csPosition;
@@ -50,13 +49,12 @@ public:
         h_hasInst = CreateEvent(NULL, FALSE, FALSE, NULL);
         strAllIns = "";
         v_instInfo.clear();
-        mapOrderRef.clear();
         m_marketData.clear();
-        v_orders.clear();
+        m_orders.clear();
         v_position.clear();
         InitializeCriticalSection(&v_csInstInfo);
         InitializeCriticalSection(&m_csMarketData);
-        InitializeCriticalSection(&v_csOrders);
+        InitializeCriticalSection(&m_csOrders);
         InitializeCriticalSection(&v_csPosition);
     }
     ~FunctionCallBackSet()
@@ -65,7 +63,7 @@ public:
         CloseHandle(h_hasInst);
         DeleteCriticalSection(&v_csInstInfo);
         DeleteCriticalSection(&m_csMarketData);
-        DeleteCriticalSection(&v_csOrders);
+        DeleteCriticalSection(&m_csOrders);
         DeleteCriticalSection(&v_csPosition);
     }
     //获取行情信息
@@ -75,10 +73,10 @@ public:
         return m_marketData[ins];
     }
     //获取有效单信息
-    vector<CThostFtdcOrderField> &GetOrderInfo()
+    map<string, CThostFtdcOrderField> &GetOrderInfo()
     {
-        CLock cl(&v_csOrders);
-        return v_orders;
+        CLock cl(&m_csOrders);
+        return m_orders;
     }
     //获取持仓信息
     vector<CThostFtdcInvestorPositionField> &GetPosition()

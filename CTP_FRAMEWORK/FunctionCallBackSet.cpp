@@ -23,9 +23,8 @@ CRITICAL_SECTION FunctionCallBackSet::m_csMarketData;
 map<string, CThostFtdcDepthMarketDataField> FunctionCallBackSet::m_marketData;
 
 //有效报单信息
-CRITICAL_SECTION FunctionCallBackSet::v_csOrders;
-vector<CThostFtdcOrderField> FunctionCallBackSet::v_orders;
-map<string, int> FunctionCallBackSet::mapOrderRef;
+CRITICAL_SECTION FunctionCallBackSet::m_csOrders;
+map<string, CThostFtdcOrderField> FunctionCallBackSet::m_orders;
 
 //持仓信息
 CRITICAL_SECTION FunctionCallBackSet::v_csPosition;
@@ -147,33 +146,31 @@ void __stdcall FunctionCallBackSet::OnRtnInstrumentStatus(void* pTraderApi, CTho
 
 void __stdcall FunctionCallBackSet::OnRtnOrder(void* pTraderApi, CThostFtdcOrderField *pOrder)
 {
-    CLock cl(&v_csOrders);
+    CLock cl(&m_csOrders);
     string ref = pOrder->OrderRef;
-    //若不存报单则加入
-    if(mapOrderRef[ref] == 0)
+    if(pOrder->OrderStatus == '0' || pOrder->OrderStatus == '5')
     {
-        if(!(pOrder->OrderStatus == '0' || pOrder->OrderStatus == '5'))
-        {
-            mapOrderRef[ref] = v_orders.size() + 1;
-            v_orders.push_back(*pOrder);
-        }
+        m_orders.erase(ref);
     }
-    //若存在则修改报单状态
     else
     {
-        v_orders[mapOrderRef[ref] - 1].OrderStatus = pOrder->OrderStatus;
-//         //如果状态为所有成交或者已撤单，则去除这个报单
-//         if(pOrder->OrderStatus == '0' || pOrder->OrderStatus == '5')
-//         {
-//             v_orders.erase(v_orders.begin() + mapOrderRef[ref] - 1);
-//             mapOrderRef[ref] = 0;
-//         }
-//         //其他状态则直接修改状态
-//         else
-//         {
-//                 
-//         }
+        m_orders[ref] = *pOrder;
     }
+    
+    //若不存报单则加入
+//     if(mapOrderRef[ref] == 0)
+//     {
+//         if(!(pOrder->OrderStatus == '0' || pOrder->OrderStatus == '5'))
+//         {
+//             mapOrderRef[ref] = v_orders.size() + 1;
+//             v_orders.push_back(*pOrder);
+//         }
+//     }
+//     //若存在则修改报单状态
+//     else
+//     {
+//         v_orders[mapOrderRef[ref] - 1].OrderStatus = pOrder->OrderStatus;
+//     }
 }
 
 void __stdcall FunctionCallBackSet::OnRtnTrade(void* pTraderApi, CThostFtdcTradeField *pTrade)
