@@ -159,4 +159,29 @@ mxArray *GetPositionData(vector<CThostFtdcInvestorPositionField> &data)
 }
 
 
+mxArray *GetInstInfo(vector<CThostFtdcInstrumentField> &data)
+{
+    mxArray *result;
+    int size = data.size();
+    mwSize dims[2] = {1, size};
+    const char *field_names[] = {"InstrumentID", "ExchangeID", "InstrumentName", "ExchangeInstID", "DeliveryYear",
+                                                   "DeliveryMonth", "PriceTick", "CreateDate", "OpenDate", "ExpireDate", 
+                                                   "IsTrading"};
+    result = mxCreateStructArray(2, dims, sizeof(field_names)/sizeof(*field_names), field_names);
+    for(int i = 0; i < size; ++i)
+    {
+        mxSetField(result, i, "InstrumentID", mxCreateString(data[i].InstrumentID));
+        mxSetField(result, i, "ExchangeID", mxCreateString(data[i].ExchangeID));
+        mxSetField(result, i, "InstrumentName", mxCreateString(data[i].InstrumentName));
+        mxSetField(result, i, "ExchangeInstID", mxCreateString(data[i].ExchangeInstID));
+        mxSetField(result, i, "DeliveryYear", mxCreateDoubleScalar(data[i].DeliveryYear));
+        mxSetField(result, i, "DeliveryMonth", mxCreateDoubleScalar(data[i].DeliveryMonth));
+        mxSetField(result, i, "PriceTick", mxCreateDoubleScalar(data[i].PriceTick));
+        mxSetField(result, i, "CreateDate", mxCreateString(data[i].CreateDate));
+        mxSetField(result, i, "OpenDate", mxCreateString(data[i].OpenDate));
+        mxSetField(result, i, "ExpireDate", mxCreateString(data[i].ExpireDate));
+        mxSetField(result, i, "IsTrading", mxCreateDoubleScalar(data[i].IsTrading));
+    }
+    return result;
+}
 #endif

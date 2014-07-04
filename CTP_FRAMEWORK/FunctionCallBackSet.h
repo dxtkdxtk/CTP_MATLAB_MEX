@@ -17,9 +17,8 @@ class FunctionCallBackSet
 public:
     //是否已获取合约
     static bool bIsGetInst;
-    
-    //所有合约，以分号隔开形式
-    
+    static bool bIsConnected;
+
     
     //是否连接事件
     static HANDLE h_connected;
@@ -27,13 +26,13 @@ public:
     
     
     //当日交易所有合约基本信息
-    static CRITICAL_SECTION v_csInstrument;
-    static vector<CThostFtdcInstrumentField> v_allInstruments;
+    static CRITICAL_SECTION v_csInstInfo;
+    static vector<CThostFtdcInstrumentField> v_instInfo;
     static string strAllIns;
     
     //当前合约行情信息
-    static CRITICAL_SECTION m_csInstInfo;
-    static map<string, CThostFtdcDepthMarketDataField> m_instInfo;
+    static CRITICAL_SECTION m_csMarketData;
+    static map<string, CThostFtdcDepthMarketDataField> m_marketData;
     
    //所有当前未结束有效报单
     static CRITICAL_SECTION v_csOrders;
@@ -46,16 +45,17 @@ public:
     FunctionCallBackSet()
     {
         bIsGetInst = false;
+        bIsConnected = false;
         h_connected = CreateEvent(NULL, FALSE, FALSE, NULL);
         h_hasInst = CreateEvent(NULL, FALSE, FALSE, NULL);
         strAllIns = "";
-        v_allInstruments.clear();
+        v_instInfo.clear();
         mapOrderRef.clear();
-        m_instInfo.clear();
+        m_marketData.clear();
         v_orders.clear();
         v_position.clear();
-        InitializeCriticalSection(&v_csInstrument);
-        InitializeCriticalSection(&m_csInstInfo);
+        InitializeCriticalSection(&v_csInstInfo);
+        InitializeCriticalSection(&m_csMarketData);
         InitializeCriticalSection(&v_csOrders);
         InitializeCriticalSection(&v_csPosition);
     }
@@ -63,26 +63,34 @@ public:
     {
         CloseHandle(h_connected);
         CloseHandle(h_hasInst);
-        DeleteCriticalSection(&v_csInstrument);
-        DeleteCriticalSection(&m_csInstInfo);
+        DeleteCriticalSection(&v_csInstInfo);
+        DeleteCriticalSection(&m_csMarketData);
         DeleteCriticalSection(&v_csOrders);
         DeleteCriticalSection(&v_csPosition);
     }
-
-    CThostFtdcDepthMarketDataField &GetInstrumentInfo(string ins)
+    //获取行情信息
+    CThostFtdcDepthMarketDataField &GetMarketData(string ins)
     {
-        CLock cl(&m_csInstInfo);
-        return m_instInfo[ins];
+        CLock cl(&m_csMarketData);
+        return m_marketData[ins];
     }
+    //获取有效单信息
     vector<CThostFtdcOrderField> &GetOrderInfo()
     {
         CLock cl(&v_csOrders);
         return v_orders;
     }
+    //获取持仓信息
     vector<CThostFtdcInvestorPositionField> &GetPosition()
     {
         CLock cl(&v_csPosition);
         return v_position;
+    }
+    //获取当日交易合约信息
+    vector<CThostFtdcInstrumentField> &GetInstInfo()
+    {
+        CLock cl(&v_csInstInfo);
+        return v_instInfo;
     }
     static void __stdcall OnConnect(void* pApi, CThostFtdcRspUserLoginField *pRspUserLogin, ConnectionStatus result);//连接后的结果状态
     static void __stdcall OnDisconnect(void* pApi, CThostFtdcRspInfoField *pRspInfo, ConnectionStatus step);//出错时所处的状态

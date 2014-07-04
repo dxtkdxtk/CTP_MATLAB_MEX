@@ -39,17 +39,25 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, mxArray *prhs[])
                         Con->investorId,
                         Con->password, 
                         THOST_TERT_RESTART, "", "");
-                
-                WaitForSingleObject(Con->callbackSet->h_connected, INFINITE);
-                Con->md->Connect(Con->streamPath, 
-                        Con->mdServer, 
-                        Con->brokerId, 
-                        Con->investorId, 
-                        Con->password);
-                Con->td->ReqQryInstrument("");
-                Con->td->ReqQryInvestorPosition("");
-                WaitForSingleObject(Con->callbackSet->h_hasInst, INFINITE);
-                mexPrintf("连接行情交易端成功\n");
+                WaitForSingleObject(Con->callbackSet->h_connected, 5000);
+                if(Con->callbackSet->bIsConnected == false)
+                {
+                    delete Con;
+                    Con = NULL;
+                    mexPrintf("交易端连接失败\n");
+                }
+                else
+                {
+                    mexPrintf("交易端连接成功\n");
+                    Con->md->Connect(Con->streamPath, 
+                            Con->mdServer, 
+                            Con->brokerId, 
+                            Con->investorId, 
+                            Con->password);
+                    Con->td->ReqQryInstrument("");
+                    Con->td->ReqQryInvestorPosition("");
+                    mexPrintf("行情端连接成功\n");
+                }
             }
             else
                 mexWarnMsgTxt("已经连接!");
@@ -95,7 +103,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, mxArray *prhs[])
         {
             CheckIsConnect();
             string inst = mxArrayToString(prhs[1]);
-            Con->td->ReqQryInstrument(inst);
+//             Con->td->ReqQryInstrument(inst);
+            plhs[0] = GetInstInfo(Con->callbackSet->GetInstInfo());
             break;
         }
         
@@ -104,7 +113,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, mxArray *prhs[])
         {
             CheckIsConnect();
             string inst = mxArrayToString(prhs[1]);
-            plhs[0] = GetMarketData(Con->callbackSet->GetInstrumentInfo(inst));
+            plhs[0] = GetMarketData(Con->callbackSet->GetMarketData(inst));
             break;
         }
         
