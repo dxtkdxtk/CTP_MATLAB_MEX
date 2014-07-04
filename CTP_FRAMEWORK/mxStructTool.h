@@ -45,7 +45,7 @@ mxArray *GetMarketData(const CThostFtdcDepthMarketDataField &data)
 }
 
 //转换报单数据
-mxArray *GetOrderData(map<string, CThostFtdcOrderField> &data)
+mxArray *GetOrderData(map<pair<int, pair<int, string> >, CThostFtdcOrderField> &data)
 {
     mxArray *result;
     int size = data.size();
@@ -54,7 +54,7 @@ mxArray *GetOrderData(map<string, CThostFtdcOrderField> &data)
                                                    "CombOffsetFlag", "LimitPrice", "ExchangeID", "OrderSysID", 
                                                    "OrderStatus", "FrontID", "SessionID"};
     result = mxCreateStructArray(2, dims, sizeof(field_names)/sizeof(*field_names), field_names);
-    map<string, CThostFtdcOrderField>::iterator iter;
+    map<pair<int, pair<int, string> >, CThostFtdcOrderField>::iterator iter;
     int i = 0;
     for(iter = data.begin(); iter != data.end(); ++iter)
     {

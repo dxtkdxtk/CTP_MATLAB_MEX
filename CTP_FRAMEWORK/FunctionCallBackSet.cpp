@@ -24,7 +24,7 @@ map<string, CThostFtdcDepthMarketDataField> FunctionCallBackSet::m_marketData;
 
 //有效报单信息
 CRITICAL_SECTION FunctionCallBackSet::m_csOrders;
-map<string, CThostFtdcOrderField> FunctionCallBackSet::m_orders;
+map<pair<int, pair<int, string> >, CThostFtdcOrderField> FunctionCallBackSet::m_orders;
 
 //持仓信息
 CRITICAL_SECTION FunctionCallBackSet::v_csPosition;
@@ -147,7 +147,7 @@ void __stdcall FunctionCallBackSet::OnRtnInstrumentStatus(void* pTraderApi, CTho
 void __stdcall FunctionCallBackSet::OnRtnOrder(void* pTraderApi, CThostFtdcOrderField *pOrder)
 {
     CLock cl(&m_csOrders);
-    string ref = pOrder->OrderRef;
+    pair<int, pair<int, string> > ref = make_pair(pOrder->FrontID, make_pair(pOrder->SessionID, pOrder->OrderRef));
     if(pOrder->OrderStatus == '0' || pOrder->OrderStatus == '5')
     {
         m_orders.erase(ref);

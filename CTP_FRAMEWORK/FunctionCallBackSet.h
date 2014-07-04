@@ -9,6 +9,7 @@
 #include <map>
 #include <vector>
 #include <set>
+#include <utility>
 using namespace std;
 class FunctionCallBackSet
 {
@@ -36,7 +37,7 @@ public:
     
    //所有当前未结束有效报单
     static CRITICAL_SECTION m_csOrders;
-    static map<string, CThostFtdcOrderField> m_orders;
+    static map<pair<int, pair<int, string> >, CThostFtdcOrderField> m_orders;
     
     //所有持仓
     static CRITICAL_SECTION v_csPosition;
@@ -73,7 +74,7 @@ public:
         return m_marketData[ins];
     }
     //获取有效单信息
-    map<string, CThostFtdcOrderField> &GetOrderInfo()
+    map<pair<int, pair<int, string> >, CThostFtdcOrderField> &GetOrderInfo()
     {
         CLock cl(&m_csOrders);
         return m_orders;
