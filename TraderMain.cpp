@@ -68,9 +68,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, mxArray *prhs[])
                         Con->td->ReqQryInstrument("");
                         mexPrintf("获取合约成功\n");
 //                         Con->td->ReqQryInvestorPosition("");
-                        Sleep(3000);
-                        Con->md->Subscribe(Con->callbackSet->strAllIns);
-                        mexPrintf("获取行情成功\n");
+//                         Sleep(3000);
+//                         Con->md->Subscribe(Con->callbackSet->strAllIns);
+//                         mexPrintf("获取行情成功\n");
                     }
                 }
             }
