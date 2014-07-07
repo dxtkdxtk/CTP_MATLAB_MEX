@@ -2,11 +2,15 @@
 #include <iostream>
 #include <string>
 #include "mex.h"
+#include "Connection.h"
 using namespace std;
+
+extern Connection *Con;
 
 //是否已获取合约
 bool FunctionCallBackSet::bIsGetInst;
-bool FunctionCallBackSet::bIsConnected;
+bool FunctionCallBackSet::bIsTdConnected;
+bool FunctionCallBackSet::bIsMdConnected;
 
 //是否连接CTP
 HANDLE FunctionCallBackSet::h_connected;
@@ -27,20 +31,25 @@ CRITICAL_SECTION FunctionCallBackSet::m_csOrders;
 map<pair<int, pair<int, string> >, CThostFtdcOrderField> FunctionCallBackSet::m_orders;
 
 //持仓信息
-CRITICAL_SECTION FunctionCallBackSet::v_csPosition;
-vector<CThostFtdcInvestorPositionField> FunctionCallBackSet::v_position;
+CRITICAL_SECTION FunctionCallBackSet::m_csPosition;
+map<pair<string, char>, CThostFtdcInvestorPositionField> FunctionCallBackSet::m_position;
 
 
 
 void __stdcall FunctionCallBackSet::OnConnect(void* pApi, CThostFtdcRspUserLoginField *pRspUserLogin, ConnectionStatus result)
 {
+    static bool isTd = false;
     if(result == E_confirmed)
     {    
-        bIsConnected = true;
+        bIsTdConnected = true;
         SetEvent(h_connected);
-        
+        isTd = true;
     }
-    
+    else if(isTd && result == E_logined)
+    {
+        bIsMdConnected = true;
+        SetEvent(h_connected);
+    }
 }
 
 void __stdcall FunctionCallBackSet::OnDisconnect(void* pApi, CThostFtdcRspInfoField *pRspInfo, ConnectionStatus step)
@@ -107,8 +116,15 @@ void __stdcall FunctionCallBackSet::OnRspQryInstrumentMarginRate(void* pTraderAp
 
 void __stdcall FunctionCallBackSet::OnRspQryInvestorPosition(void* pTraderApi, CThostFtdcInvestorPositionField *pInvestorPosition, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
-    CLock cl(&v_csPosition);
-    v_position.push_back(*pInvestorPosition);
+    CLock cl(&m_csPosition);
+    if(pInvestorPosition->Position == 0)
+    {
+        m_position.erase(make_pair(pInvestorPosition->InstrumentID, pInvestorPosition->PosiDirection));
+    }
+    else
+    {
+        m_position[make_pair(pInvestorPosition->InstrumentID, pInvestorPosition->PosiDirection)] = *pInvestorPosition;
+    }
 }
 
 void __stdcall FunctionCallBackSet::OnRspQryInvestorPositionDetail(void* pTraderApi, CThostFtdcInvestorPositionDetailField *pInvestorPositionDetail, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
@@ -133,10 +149,11 @@ void __stdcall FunctionCallBackSet::OnRspQryTradingAccount(void* pTraderApi, CTh
 
 void __stdcall FunctionCallBackSet::OnRtnDepthMarketData(void* pMdUserApi, CThostFtdcDepthMarketDataField *pDepthMarketData)
 {
-    
+    Con->td->ReqQryInvestorPosition(pDepthMarketData->InstrumentID);
+
     CLock cl(&m_csMarketData);
-    memcpy(&m_marketData[string(pDepthMarketData->InstrumentID)], pDepthMarketData, sizeof(CThostFtdcDepthMarketDataField));
-    
+//     memcpy(&m_marketData[string(pDepthMarketData->InstrumentID)], pDepthMarketData, sizeof(CThostFtdcDepthMarketDataField));
+    m_marketData[string(pDepthMarketData->InstrumentID)] = *pDepthMarketData;
 }
 
 void __stdcall FunctionCallBackSet::OnRtnInstrumentStatus(void* pTraderApi, CThostFtdcInstrumentStatusField *pInstrumentStatus)
@@ -148,6 +165,7 @@ void __stdcall FunctionCallBackSet::OnRtnOrder(void* pTraderApi, CThostFtdcOrder
 {
     CLock cl(&m_csOrders);
     pair<int, pair<int, string> > ref = make_pair(pOrder->FrontID, make_pair(pOrder->SessionID, pOrder->OrderRef));
+    //撤单或者成交单，则删除
     if(pOrder->OrderStatus == '0' || pOrder->OrderStatus == '5')
     {
         m_orders.erase(ref);
@@ -157,20 +175,6 @@ void __stdcall FunctionCallBackSet::OnRtnOrder(void* pTraderApi, CThostFtdcOrder
         m_orders[ref] = *pOrder;
     }
     
-    //若不存报单则加入
-//     if(mapOrderRef[ref] == 0)
-//     {
-//         if(!(pOrder->OrderStatus == '0' || pOrder->OrderStatus == '5'))
-//         {
-//             mapOrderRef[ref] = v_orders.size() + 1;
-//             v_orders.push_back(*pOrder);
-//         }
-//     }
-//     //若存在则修改报单状态
-//     else
-//     {
-//         v_orders[mapOrderRef[ref] - 1].OrderStatus = pOrder->OrderStatus;
-//     }
 }
 
 void __stdcall FunctionCallBackSet::OnRtnTrade(void* pTraderApi, CThostFtdcTradeField *pTrade)

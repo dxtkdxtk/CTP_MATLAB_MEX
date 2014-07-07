@@ -130,33 +130,37 @@ void MxToOrder(CThostFtdcOrderField &order, mxArray *data)
 }
 
 //转换持仓数据
-mxArray *GetPositionData(vector<CThostFtdcInvestorPositionField> &data)
+mxArray *GetPositionData(map<pair<string, char>, CThostFtdcInvestorPositionField> &data)
 {
     mxArray *result;
     int size = data.size();
     mwSize dims[2] = {1, size};
     const char *field_names[] = {"BrokerID", "InvestorID", "InstrumentID", "PosiDirection", "PositionDate",
                                                    "YdPosition", "Position", "OpenVolume", "CloseVolume", "PositionCost", 
-                                                   "CloseProfit", "PositionProfit", "TodayPosition"};
+                                                   "CloseProfit", "PositionProfit", "TodayPosition", "UseMargin"};
     result = mxCreateStructArray(2, dims, sizeof(field_names)/sizeof(*field_names), field_names);
-    for(int i = 0; i < size; ++i)
+    map<pair<string, char>, CThostFtdcInvestorPositionField>::iterator iter;
+    int i = 0;
+    for(iter = data.begin(); iter != data.end(); ++iter)
     {
         string tmp;
-        mxSetField(result, i, "BrokerID", mxCreateString(data[i].BrokerID));
-        mxSetField(result, i, "InvestorID", mxCreateString(data[i].InvestorID));
-        mxSetField(result, i, "InstrumentID", mxCreateString(data[i].InstrumentID));
-        tmp = string("") + data[i].PosiDirection;
+        mxSetField(result, i, "BrokerID", mxCreateString(iter->second.BrokerID));
+        mxSetField(result, i, "InvestorID", mxCreateString(iter->second.InvestorID));
+        mxSetField(result, i, "InstrumentID", mxCreateString(iter->second.InstrumentID));
+        tmp = string("") + iter->second.PosiDirection;
         mxSetField(result, i, "PosiDirection", mxCreateString(tmp.c_str()));
-        tmp = string("") + data[i].PositionDate;
+        tmp = string("") + iter->second.PositionDate;
         mxSetField(result, i, "PositionDate", mxCreateString(tmp.c_str()));
-        mxSetField(result, i, "YdPosition", mxCreateDoubleScalar(data[i].YdPosition));
-        mxSetField(result, i, "Position", mxCreateDoubleScalar(data[i].Position));
-        mxSetField(result, i, "OpenVolume", mxCreateDoubleScalar(data[i].OpenVolume));
-        mxSetField(result, i, "CloseVolume", mxCreateDoubleScalar(data[i].CloseVolume));
-        mxSetField(result, i, "PositionCost", mxCreateDoubleScalar(data[i].PositionCost));
-        mxSetField(result, i, "CloseProfit", mxCreateDoubleScalar(data[i].CloseProfit));
-        mxSetField(result, i, "PositionProfit", mxCreateDoubleScalar(data[i].PositionProfit));
-        mxSetField(result, i, "TodayPosition", mxCreateDoubleScalar(data[i].TodayPosition));
+        mxSetField(result, i, "YdPosition", mxCreateDoubleScalar(iter->second.YdPosition));
+        mxSetField(result, i, "Position", mxCreateDoubleScalar(iter->second.Position));
+        mxSetField(result, i, "OpenVolume", mxCreateDoubleScalar(iter->second.OpenVolume));
+        mxSetField(result, i, "CloseVolume", mxCreateDoubleScalar(iter->second.CloseVolume));
+        mxSetField(result, i, "PositionCost", mxCreateDoubleScalar(iter->second.PositionCost));
+        mxSetField(result, i, "CloseProfit", mxCreateDoubleScalar(iter->second.CloseProfit));
+        mxSetField(result, i, "PositionProfit", mxCreateDoubleScalar(iter->second.PositionProfit));
+        mxSetField(result, i, "TodayPosition", mxCreateDoubleScalar(iter->second.TodayPosition));
+        mxSetField(result, i, "UseMargin", mxCreateDoubleScalar(iter->second.UseMargin));
+        ++i;
     }
     return result;
 }

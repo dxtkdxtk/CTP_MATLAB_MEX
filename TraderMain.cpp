@@ -10,6 +10,7 @@
 
 using namespace std;
 
+//连接总参数
 Connection *Con;
 
 void CheckIsConnect()
@@ -40,7 +41,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, mxArray *prhs[])
                         Con->password, 
                         THOST_TERT_RESTART, "", "");
                 WaitForSingleObject(Con->callbackSet->h_connected, 5000);
-                if(Con->callbackSet->bIsConnected == false)
+                if(Con->callbackSet->bIsTdConnected == false)
                 {
                     delete Con;
                     Con = NULL;
@@ -54,9 +55,23 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, mxArray *prhs[])
                             Con->brokerId, 
                             Con->investorId, 
                             Con->password);
-                    Con->td->ReqQryInstrument("");
-                    Con->td->ReqQryInvestorPosition("");
-                    mexPrintf("行情端连接成功\n");
+                    WaitForSingleObject(Con->callbackSet->h_connected, 5000);
+                    if(Con->callbackSet->bIsMdConnected == false)
+                    {
+                        delete Con;
+                        Con = NULL;
+                        mexPrintf("行情端连接失败\n");
+                    }
+                    else
+                    {
+                        mexPrintf("行情端连接成功\n");
+                        Con->td->ReqQryInstrument("");
+                        mexPrintf("获取合约成功\n");
+//                         Con->td->ReqQryInvestorPosition("");
+                        Sleep(3000);
+                        Con->md->Subscribe(Con->callbackSet->strAllIns);
+                        mexPrintf("获取行情成功\n");
+                    }
                 }
             }
             else
@@ -153,17 +168,20 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, mxArray *prhs[])
         case 9:
         {
             CheckIsConnect();
-//             CLock cl(&Con->callbackSet->v_csPosition);
-//             Con->callbackSet->v_position.clear();
-//             Con->td->ReqQryInvestorPosition("");
-            
+
             plhs[0] = GetPositionData(Con->callbackSet->GetPosition());
             
             break;
         }
         
+        case 10:
+        {
+            bool isconnect = !(NULL == Con);
+            plhs[0] = mxCreateLogicalScalar(isconnect);
+            break;
+        }
         default:
-            mexWarnMsgTxt("没有找到相关操作");
+            mexErrMsgTxt("没有找到相关操作");
     
     }
 

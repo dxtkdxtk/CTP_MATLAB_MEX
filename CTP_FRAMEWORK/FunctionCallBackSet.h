@@ -18,7 +18,8 @@ class FunctionCallBackSet
 public:
     //是否已获取合约
     static bool bIsGetInst;
-    static bool bIsConnected;
+    static bool bIsTdConnected;
+    static bool bIsMdConnected;
 
     
     //是否连接事件
@@ -40,23 +41,24 @@ public:
     static map<pair<int, pair<int, string> >, CThostFtdcOrderField> m_orders;
     
     //所有持仓
-    static CRITICAL_SECTION v_csPosition;
-    static vector<CThostFtdcInvestorPositionField> v_position;
+    static CRITICAL_SECTION m_csPosition;
+    static map<pair<string, char>, CThostFtdcInvestorPositionField> m_position;
     FunctionCallBackSet()
     {
         bIsGetInst = false;
-        bIsConnected = false;
+        bIsTdConnected = false;
+        bIsMdConnected = false;
         h_connected = CreateEvent(NULL, FALSE, FALSE, NULL);
         h_hasInst = CreateEvent(NULL, FALSE, FALSE, NULL);
         strAllIns = "";
         v_instInfo.clear();
         m_marketData.clear();
         m_orders.clear();
-        v_position.clear();
+        m_position.clear();
         InitializeCriticalSection(&v_csInstInfo);
         InitializeCriticalSection(&m_csMarketData);
         InitializeCriticalSection(&m_csOrders);
-        InitializeCriticalSection(&v_csPosition);
+        InitializeCriticalSection(&m_csPosition);
     }
     ~FunctionCallBackSet()
     {
@@ -65,7 +67,7 @@ public:
         DeleteCriticalSection(&v_csInstInfo);
         DeleteCriticalSection(&m_csMarketData);
         DeleteCriticalSection(&m_csOrders);
-        DeleteCriticalSection(&v_csPosition);
+        DeleteCriticalSection(&m_csPosition);
     }
     //获取行情信息
     CThostFtdcDepthMarketDataField &GetMarketData(string ins)
@@ -80,10 +82,10 @@ public:
         return m_orders;
     }
     //获取持仓信息
-    vector<CThostFtdcInvestorPositionField> &GetPosition()
+    map<pair<string, char>, CThostFtdcInvestorPositionField> &GetPosition()
     {
-        CLock cl(&v_csPosition);
-        return v_position;
+        CLock cl(&m_csPosition);
+        return m_position;
     }
     //获取当日交易合约信息
     vector<CThostFtdcInstrumentField> &GetInstInfo()
