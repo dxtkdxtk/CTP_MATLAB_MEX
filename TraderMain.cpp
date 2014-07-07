@@ -102,8 +102,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, mxArray *prhs[])
         case 4:
         {
             CheckIsConnect();
-            string inst = mxArrayToString(prhs[1]);
-//             Con->td->ReqQryInstrument(inst);
+
             plhs[0] = GetInstInfo(Con->callbackSet->GetInstInfo());
             break;
         }
