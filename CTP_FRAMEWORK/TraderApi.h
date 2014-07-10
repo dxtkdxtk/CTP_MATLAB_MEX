@@ -1,5 +1,20 @@
+/*****************************************************************************
+File name: TraderApi.h
+Description: Defined APIs for CTP trader
+Author: jebin
+Date: 2014/07/10
+History: see git log
+*****************************************************************************/
+
 #ifndef TRADERAPI_H
 #define TRADERAPI_H
+
+
+#include "LockFreeQ.h"
+#include "CLock.h"
+#include "CTPStruct.h"
+#include "CTPMsgQueue.h"
+#include "toolkit.h"
 
 #include "ThostTraderApi\ThostFtdcTraderApi.h"
 
@@ -8,11 +23,7 @@
 #include <map>
 #include <string>
 #include <Windows.h>
-#include "LockFreeQ.h"
-#include "CLock.h"
-#include "CTPStruct.h"
-#include "CTPMsgQueue.h"
-#include "toolkit.h"
+
 using namespace std;
 
 class CTPMsgQueue;

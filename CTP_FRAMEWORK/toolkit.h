@@ -1,3 +1,11 @@
+/*****************************************************************************
+File name: toolkit.h
+Description: Defined some useful operations independent
+Author: jebin
+Date: 2014/07/10
+History: see git log
+*****************************************************************************/
+
 #ifndef _TOOLKIT_H_
 #define _TOOLKIT_H_
 

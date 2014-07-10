@@ -1,9 +1,21 @@
+/*****************************************************************************
+File name: MdUserApi.cpp
+Description: implement MdUserApi.h
+Author: jebin
+Date: 2014/07/10
+History: see git log
+*****************************************************************************/
+
 #include "MdUserApi.h"
-#include <iostream>
 #include "toolkit.h"
 #include "CLock.h"
+
+#include <iostream>
+
 using namespace std;
+
 #define _CTP_SEPS_ ",;"
+
 MdUserApi::MdUserApi(void)
 {
     m_pMdUserApi = NULL;

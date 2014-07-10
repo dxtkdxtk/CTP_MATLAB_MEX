@@ -1,8 +1,20 @@
+/*****************************************************************************
+File name: MdUserApi.h
+Description: Defined operations for operate md 
+Author: jebin
+Date: 2014/07/10
+History: see git log
+*****************************************************************************/
+
 #ifndef MDUSERAPI_H
 #define MDUSERAPI_H
-#include "ThostTraderApi\ThostFtdcMdApi.h"
+
+
 #include "CTPStruct.h"
 #include "CTPMsgQueue.h"
+
+#include "ThostTraderApi\ThostFtdcMdApi.h"
+
 #include <set>
 #include <string>
 #include <Windows.h>

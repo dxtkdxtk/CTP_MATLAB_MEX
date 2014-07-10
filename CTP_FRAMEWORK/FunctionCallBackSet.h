@@ -1,9 +1,20 @@
+/*****************************************************************************
+File name: FunctionCallBackSet.h
+Description: Defined a set of callback functions for the CTP callback &
+ *defined some struct to store the message of callback.
+Author: jebin
+Date: 2014/07/10
+History: see git log
+*****************************************************************************/
+
 #ifndef FUNCTION_CALL_BACK_H
 #define FUNCTION_CALL_BACK_H
 
 #include "CTPStruct.h"
-#include "ThostTraderApi\ThostFtdcUserApiStruct.h"
 #include "CLock.h"
+
+#include "ThostTraderApi\ThostFtdcUserApiStruct.h"
+
 #include <list>
 #include <Windows.h>
 #include <map>

@@ -1,5 +1,5 @@
 function res = GetInstrument()
-%QRYINSTRUMENT 查询合约信息
+%QRYINSTRUMENT 获取当日交易合约信息
 %instrumentsInfo = GetInstrument();
 res = TraderMain(4);
 

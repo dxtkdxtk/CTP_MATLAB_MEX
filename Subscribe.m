@@ -1,5 +1,6 @@
 function Subscribe(varargin)
 % 订阅行情，逗号或者分号隔开
+% Subscribe('IF1407,IF1408')
 inst = '';
 if(nargin > 1)
     error('参数个数必须小于2');

@@ -1,3 +1,11 @@
+/*****************************************************************************
+File name: CTPMsgQueue.cpp
+Description: Implement of CTPMsgQueue.h
+Author: jebin
+Date: 2014/07/10
+History: see git log
+*****************************************************************************/
+
 #include "CTPMsgQueue.h"
 void CTPMsgQueue::RegisterCallback(FunctionCallBackSet *CallbackSet)
 {

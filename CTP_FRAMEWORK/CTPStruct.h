@@ -1,5 +1,14 @@
+/*****************************************************************************
+File name: CTPStruct.h
+Description: Defined connection status & callback function
+Author: jebin
+Date: 2014/07/10
+History: see git log
+*****************************************************************************/
+
 #ifndef CTPSTRUCT_H
 #define CTPSTRUCT_H
+
 #include "ThostTraderApi\ThostFtdcUserApiStruct.h"
 
 //Á¬½Ó×´Ì¬

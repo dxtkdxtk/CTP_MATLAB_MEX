@@ -1,3 +1,4 @@
+
 if(isconnect)
     error('CTP已经连接，请断开连接再编译');
 end

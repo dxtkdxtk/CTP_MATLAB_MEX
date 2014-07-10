@@ -1,4 +1,13 @@
+/*****************************************************************************
+File name: toolkit.cpp
+Description: Implement toolkit.h
+Author: jebin
+Date: 2014/07/10
+History: see git log
+*****************************************************************************/
+
 #include "toolkit.h"
+
 #include <direct.h>
 
 void makedirs(const char* dir)

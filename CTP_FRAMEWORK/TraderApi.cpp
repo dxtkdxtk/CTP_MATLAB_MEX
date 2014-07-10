@@ -1,4 +1,10 @@
-//TraderApi
+/*****************************************************************************
+File name: TraderApi.cpp
+Description: Implement TraderApi.h
+Author: jebin
+Date: 2014/07/10
+History: see git log
+*****************************************************************************/
 
 #include "TraderApi.h"
 #define _SEP_ ",;"

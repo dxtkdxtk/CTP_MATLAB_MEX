@@ -1,3 +1,15 @@
+/*****************************************************************************
+File name: TraderMain.cpp
+Description: CTP for matlab mex. Designed a series of operations to operate the CTP
+Author: jebin
+Version: 0.0.1
+Date: 2014/07/10
+History: see git log
+*****************************************************************************/
+
+#include "Connection.h"
+#include "mxStructTool.h"
+
 #include "mex.h"
 #include "matrix.h"
 
@@ -5,8 +17,6 @@
 #include<cstring>
 #include<string>
 #include<set>
-#include "Connection.h"
-#include "mxStructTool.h"
 
 using namespace std;
 
@@ -19,6 +29,7 @@ void CheckIsConnect()
         mexErrMsgTxt("未连接CTP!");
 }
 
+//mex主函数入口
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, mxArray *prhs[])
 {
     //为保证速度，未添加安全判断
@@ -67,10 +78,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, mxArray *prhs[])
                         mexPrintf("行情端连接成功\n");
                         Con->td->ReqQryInstrument("");
                         mexPrintf("获取合约成功\n");
-//                         Con->td->ReqQryInvestorPosition("");
-//                         Sleep(3000);
-//                         Con->md->Subscribe(Con->callbackSet->strAllIns);
-//                         mexPrintf("获取行情成功\n");
                     }
                 }
             }
@@ -168,12 +175,11 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, mxArray *prhs[])
         case 9:
         {
             CheckIsConnect();
-
             plhs[0] = GetPositionData(Con->callbackSet->GetPosition());
-            
             break;
         }
         
+        //判断是否连接
         case 10:
         {
             bool isconnect = !(NULL == Con);

@@ -1,12 +1,24 @@
+/*****************************************************************************
+File name: CTPMsgQueue.h
+Description: Defined a queue to process CTP callback message.
+Author: jebin
+Date: 2014/07/10
+History: see git log
+*****************************************************************************/
+
 #ifndef CTP_QUEUE_H
 #define CTP_QUEUE_H
 
 #include "CTPStruct.h"
 #include "LockFreeQ.h"
-#include <iostream>
 #include "FunctionCallBackSet.h"
+
 #include "mex.h"
+
+#include <iostream>
+
 using namespace std;
+
 class CTPMsgQueue
 {
     //响应队列中可能出现的消息类型（按字母排序）

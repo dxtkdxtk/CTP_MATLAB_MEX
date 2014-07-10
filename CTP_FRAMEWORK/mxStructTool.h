@@ -1,7 +1,16 @@
+/*****************************************************************************
+File name: mxStructTool.h
+Description: Defined operations for convert matlab struct to c++ struct bothway
+Author: jebin
+Date: 2014/07/10
+History: see git log
+*****************************************************************************/
+
 #ifndef MXSTRUCTTOOL_H
 #define MXSTRUCTTOOL_H
 
 #include "Connection.h"
+
 #include "mex.h"
 #include "matrix.h"
 
