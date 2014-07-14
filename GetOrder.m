@@ -1,7 +1,8 @@
 function order = GetOrder(orderref)
-%GETORDER 此处显示有关此函数的摘要
-%   此处显示详细说明
-
-order = TraderMain(12, orderref);
+%GETORDER 获取当前连接指定报单
+if(~isnumeric(orderref))
+    error('输入必须为数字');
+end
+order = TraderMain(12, num2str(orderref));
 end
 
