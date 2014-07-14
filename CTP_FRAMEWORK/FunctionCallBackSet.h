@@ -47,7 +47,7 @@ public:
     static CRITICAL_SECTION m_csMarketData;
     static map<string, CThostFtdcDepthMarketDataField> m_marketData;
     
-   //所有当前未结束有效报单
+   //所有报单
     static CRITICAL_SECTION m_csOrders;
     static map<pair<int, pair<int, string> >, CThostFtdcOrderField> m_orders;
     

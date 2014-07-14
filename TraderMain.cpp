@@ -17,6 +17,7 @@ History: see git log
 #include<cstring>
 #include<string>
 #include<set>
+#include<utility>
 
 using namespace std;
 
@@ -147,9 +148,10 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, mxArray *prhs[])
             string offsetFlag = mxArrayToString(prhs[3]);
             double volume = mxGetScalar(prhs[4]);
             double price = mxGetScalar(prhs[5]);
-            Con->td->ReqOrderInsert(inst, direction[0], offsetFlag.c_str(), "1", (int)volume, price, 
+            int ref = Con->td->ReqOrderInsert(inst, direction[0], offsetFlag.c_str(), "1", (int)volume, price, 
                     THOST_FTDC_OPT_LimitPrice, THOST_FTDC_TC_GFD, THOST_FTDC_CC_Immediately, 
                     0, THOST_FTDC_VC_AV);
+            plhs[0] = mxCreateDoubleScalar(ref);
             break;
         }   
         
@@ -157,7 +159,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, mxArray *prhs[])
         case 7:
         {
             CheckIsConnect();
-            plhs[0] = GetOrderData(Con->callbackSet->GetOrderInfo());
+            pair<int, pair<int, string> > order;
+            plhs[0] = GetOrderData(Con->callbackSet->GetOrderInfo(), order);
             break;
         }
         
@@ -184,6 +187,34 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, mxArray *prhs[])
         {
             bool isconnect = !(NULL == Con);
             plhs[0] = mxCreateLogicalScalar(isconnect);
+            break;
+        }
+        //按报单引用撤单
+        case 11:
+        {
+            CheckIsConnect();
+            map<pair<int, pair<int, string> >, CThostFtdcOrderField> &orders = Con->callbackSet->m_orders;
+            string ref = mxArrayToString(prhs[1]);
+            pair<int, pair<int, string> > order = 
+                    make_pair(Con->td->m_RspUserLogin.FrontID, make_pair(Con->td->m_RspUserLogin.SessionID, ref));
+            if(orders.find(order) != orders.end())
+                Con->td->ReqOrderAction(&orders[order]);
+            else
+                mexErrMsgTxt("未存在此报单\n");
+            break;
+        }
+        //按报单引用获取报单信息
+        case 12:
+        {
+            CheckIsConnect();
+            map<pair<int, pair<int, string> >, CThostFtdcOrderField> &orders = Con->callbackSet->m_orders;
+            string ref = mxArrayToString(prhs[1]);
+             pair<int, pair<int, string> > order = 
+                    make_pair(Con->td->m_RspUserLogin.FrontID, make_pair(Con->td->m_RspUserLogin.SessionID, ref));
+             if(orders.find(order) != orders.end())
+                plhs[0] = GetOrderData(Con->callbackSet->GetOrderInfo(), order);
+            else
+                mexErrMsgTxt("未存在此报单\n");
             break;
         }
         default:

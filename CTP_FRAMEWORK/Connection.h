@@ -78,8 +78,6 @@ public:
     string password;//投资者密码
     string instrumentId;//合约名
     
-    
-    
 
 };
 

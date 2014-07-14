@@ -1,4 +1,4 @@
-function OrderInsert(inst, direction, flag, volume, price)
+function ref = OrderInsert(inst, direction, flag, volume, price)
 %ORDERINSERT 下单操作
 %OrderInsert('IF1407', '0', '0', 1, 2300);
 % inst: 合约名
@@ -9,7 +9,7 @@ function OrderInsert(inst, direction, flag, volume, price)
 if(~ischar(inst) || ~ischar(direction) || ~ischar(flag) || ~isnumeric(volume) || ~isnumeric(price))
     error('input type error');
 end
-TraderMain(6, inst, direction, flag, volume, price);
+ref = TraderMain(6, inst, direction, flag, volume, price);
 
 
 end

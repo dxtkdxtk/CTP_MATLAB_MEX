@@ -574,7 +574,7 @@ void TraderApi::ReqOrderAction(CThostFtdcOrderField *pOrder)
     SRequest* pRequest = MakeRequestBuf(E_InputOrderActionField);
     if (NULL == pRequest)
         return;
-
+    
     CThostFtdcInputOrderActionField& body = pRequest->InputOrderActionField;
 
     ///经纪公司代码
@@ -600,6 +600,7 @@ void TraderApi::ReqOrderAction(CThostFtdcOrderField *pOrder)
     m_pApi->ReqOrderAction(&pRequest->InputOrderActionField, lRequest);
     delete pRequest;
 }
+
 
 void TraderApi::OnRspOrderAction(CThostFtdcInputOrderActionField *pInputOrderAction, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {

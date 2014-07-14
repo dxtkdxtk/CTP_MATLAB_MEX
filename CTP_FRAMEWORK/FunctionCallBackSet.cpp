@@ -177,15 +177,8 @@ void __stdcall FunctionCallBackSet::OnRtnOrder(void* pTraderApi, CThostFtdcOrder
 {
     CLock cl(&m_csOrders);
     pair<int, pair<int, string> > ref = make_pair(pOrder->FrontID, make_pair(pOrder->SessionID, pOrder->OrderRef));
-    //撤单或者成交单，则删除
-    if(pOrder->OrderStatus == '0' || pOrder->OrderStatus == '5')
-    {
-        m_orders.erase(ref);
-    }
-    else
-    {
-        m_orders[ref] = *pOrder;
-    }
+    m_orders[ref] = *pOrder;
+
     
 }
 
