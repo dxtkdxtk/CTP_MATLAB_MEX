@@ -217,6 +217,23 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, mxArray *prhs[])
                 mexErrMsgTxt("未存在此报单\n");
             break;
         }
+        case 13: 
+        {
+            CheckIsConnect();
+            map<pair<int, pair<int, string> >, CThostFtdcOrderField> &orders = Con->callbackSet->m_orders;
+            
+            int frontid = (int)mxGetScalar(prhs[1]);
+            int session = (int)mxGetScalar(prhs[2]);
+            string ref = mxArrayToString(prhs[3]);
+            
+            pair<int, pair<int, string> > order = 
+                    make_pair(frontid, make_pair(session, ref));
+            if(orders.find(order) != orders.end())
+                plhs[0] = GetOrderData(Con->callbackSet->GetOrderInfo(), order);
+            else
+                mexErrMsgTxt("未存在此报单\n");
+            break;
+        }
         default:
             mexErrMsgTxt("没有找到相关操作");
     
