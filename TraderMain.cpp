@@ -102,7 +102,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, mxArray *prhs[])
         {
             CheckIsConnect();
             string inst = mxArrayToString(prhs[1]);
-            mexPrintf("%s\n", inst.c_str());
             if(inst.size() == 0)
             {
                 if(Con->callbackSet->bIsGetInst)
@@ -159,7 +158,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, mxArray *prhs[])
         case 7:
         {
             CheckIsConnect();
-            pair<int, pair<int, string> > order;
+            pair<int, pair<int, string> > order = make_pair(0, make_pair(0, ""));
             plhs[0] = GetOrderData(Con->callbackSet->GetOrderInfo(), order);
             break;
         }
@@ -174,7 +173,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, mxArray *prhs[])
             break;
         }
         
-        //获取持仓信息
+        //获取所有持仓信息
         case 9:
         {
             CheckIsConnect();
@@ -203,7 +202,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, mxArray *prhs[])
                 mexErrMsgTxt("未存在此报单\n");
             break;
         }
-        //按报单引用获取报单信息
+        //按报单引用获取报单信息(当前连接)
         case 12:
         {
             CheckIsConnect();
@@ -217,6 +216,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, mxArray *prhs[])
                 mexErrMsgTxt("未存在此报单\n");
             break;
         }
+        //获取指定连接报单
         case 13: 
         {
             CheckIsConnect();
@@ -232,6 +232,12 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, mxArray *prhs[])
                 plhs[0] = GetOrderData(Con->callbackSet->GetOrderInfo(), order);
             else
                 mexErrMsgTxt("未存在此报单\n");
+            break;
+        }
+        case 14: 
+        {
+            CheckIsConnect();
+            plhs[0] = GetPositionData(Con->callbackSet->GetPosition(), mxArrayToString(prhs[1]));
             break;
         }
         default:
