@@ -12,6 +12,5 @@ if(~ischar(inst) || ~ischar(direction) || ~ischar(flag) || ~isnumeric(volume) ||
 end
 ref = TraderMain(6, inst, direction, flag, volume, price);
 
-
 end
 

@@ -234,6 +234,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, mxArray *prhs[])
                 mexErrMsgTxt("未存在此报单\n");
             break;
         }
+        
+        //获取指定合约持仓
         case 14: 
         {
             CheckIsConnect();
