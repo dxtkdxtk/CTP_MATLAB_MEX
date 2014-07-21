@@ -1,4 +1,4 @@
-function order = GetOrder(varagin)
+function order = GetOrder(varargin)
 %GETORDER 获取报单
 % 获取所有报单：order = GETORDER;
 % 获取当下连接报单：order = GETORDER(orderref); orderref为报单引用数字
@@ -6,15 +6,16 @@ function order = GetOrder(varagin)
 if(nargin == 0)
     order = TraderMain(7);
 elseif (nargin == 1)
-    if(~isnumeric(varagin{1}))
+    if(~isnumeric(varargin{1}))
         error('输入必须为数字!');
     end
-    order = TraderMain(12, num2str(varagin{1}));
+    disp(varargin{1});
+    order = TraderMain(7, num2str(varargin{1}));
 elseif (nargin == 3)
-    if(~isnumeric(varagin{1}) || ~isnumeric(varagin{2}) || ~isnumeric(varagin{3}))
+    if(~isnumeric(varargin{1}) || ~isnumeric(varargin{2}) || ~isnumeric(varargin{3}))
         error('输入必须全部为数字!');
     end
-    order = TraderMain(13, varagin{1}, varagin{2}, num2str(varagin{3}));
+    order = TraderMain(7, varargin{1}, varargin{2}, num2str(varargin{3}));
 else
     error('参数个数错误!');
 end
