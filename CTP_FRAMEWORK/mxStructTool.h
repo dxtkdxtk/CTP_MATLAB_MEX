@@ -203,7 +203,16 @@ mxArray *GetPositionData(map<pair<string, char>, CThostFtdcInvestorPositionField
     }
     else
     {
-        mwSize dims[2] = {1, 2};
+        int size = 0;
+        for(int j = 1; j <= 3; ++j)
+        {
+            pair<string, char> p = make_pair(inst, char(j+48));
+            if( data.find(p) != data.end() )
+            {
+                ++size;
+            }
+        }
+        mwSize dims[2] = {1, size};
         result = mxCreateStructArray(2, dims, sizeof(field_names)/sizeof(*field_names), field_names);
         map<pair<string, char>, CThostFtdcInvestorPositionField>::iterator iter;
         int i = 0;
