@@ -77,13 +77,19 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, mxArray *prhs[])
                     else
                     {
                         mexPrintf("行情端连接成功\n");
+                        plhs[0] = mxCreateDoubleScalar(Con->td->m_RspUserLogin.FrontID);
+                        plhs[1] = mxCreateDoubleScalar(Con->td->m_RspUserLogin.SessionID);
                         Con->td->ReqQryInstrument("");
                         mexPrintf("获取合约成功\n");
                     }
                 }
             }
             else
+            {
                 mexWarnMsgTxt("已经连接!");
+                plhs[0] = mxCreateDoubleScalar(Con->td->m_RspUserLogin.FrontID);
+                plhs[1] = mxCreateDoubleScalar(Con->td->m_RspUserLogin.SessionID);
+            }
             break;
         }
         

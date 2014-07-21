@@ -2,6 +2,7 @@ function CancelOrder(varargin)
 %CANCELORDER 撤单，可以使用orderref撤单，或者用报单结构撤单
 %撤指定单: CANCELORDER(orderInfo);
 %撤orderref单: CANCELORDER(orderref);
+%撤指定连接单: CANCELORDER(frontid, sessionid, orderref);
 if(nargin == 1)
     if(isnumeric(varargin{1}))
         TraderMain(8, num2str(varargin{1}));
