@@ -8,7 +8,7 @@ elseif (nargin == 1)
     if(~ischar(varargin{1}))
         error('参数类型错误！');
     end
-    position = TraderMain(14, varargin{1});
+    position = TraderMain(9, varargin{1});
 else
     error('参数个数错误！');
 end

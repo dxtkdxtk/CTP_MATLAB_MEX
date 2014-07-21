@@ -173,7 +173,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, mxArray *prhs[])
                 if(orders.find(order) != orders.end())
                     plhs[0] = GetOrderData(Con->callbackSet->GetOrderInfo(), order);
                 else
-                    mexErrMsgTxt("未存在此报单\n");
+                    mexWarnMsgTxt("未存在此报单\n");
             }
             //查询所有连接中指定报单
             else if(nrhs == 4)
@@ -186,7 +186,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, mxArray *prhs[])
                 if(orders.find(order) != orders.end())
                     plhs[0] = GetOrderData(Con->callbackSet->GetOrderInfo(), order);
                 else
-                    mexErrMsgTxt("未存在此报单\n");
+                    mexWarnMsgTxt("未存在此报单\n");
             }
             break;
         }
@@ -212,7 +212,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, mxArray *prhs[])
                     if(orders.find(order) != orders.end())
                         Con->td->ReqOrderAction(&orders[order]);
                     else
-                        mexErrMsgTxt("未存在此报单\n");
+                        mexWarnMsgTxt("未存在此报单\n");
                 }
             }
             else if(nrhs == 4)
@@ -225,7 +225,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, mxArray *prhs[])
                 if(orders.find(order) != orders.end())
                     Con->td->ReqOrderAction(&orders[order]);
                 else
-                    mexErrMsgTxt("未存在此报单\n");
+                    mexWarnMsgTxt("未存在此报单\n");
             }
             
             break;
@@ -235,7 +235,12 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, mxArray *prhs[])
         case 9:
         {
             CheckIsConnect();
-            plhs[0] = GetPositionData(Con->callbackSet->GetPosition());
+            // 查询所有持仓
+            if(nrhs == 1)
+                plhs[0] = GetPositionData(Con->callbackSet->GetPosition());
+            // 查询指定持仓
+            else if(nrhs == 2)      
+                plhs[0] = GetPositionData(Con->callbackSet->GetPosition(), mxArrayToString(prhs[1]));
             break;
         }
         
@@ -247,13 +252,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, mxArray *prhs[])
             break;
         }
         
-        //获取指定合约持仓
-        case 14: 
-        {
-            CheckIsConnect();
-            plhs[0] = GetPositionData(Con->callbackSet->GetPosition(), mxArrayToString(prhs[1]));
-            break;
-        }
         default:
             mexErrMsgTxt("没有找到相关操作");
     

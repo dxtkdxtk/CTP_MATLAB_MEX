@@ -9,7 +9,6 @@ elseif (nargin == 1)
     if(~isnumeric(varargin{1}))
         error('输入必须为数字!');
     end
-    disp(varargin{1});
     order = TraderMain(7, num2str(varargin{1}));
 elseif (nargin == 3)
     if(~isnumeric(varargin{1}) || ~isnumeric(varargin{2}) || ~isnumeric(varargin{3}))
