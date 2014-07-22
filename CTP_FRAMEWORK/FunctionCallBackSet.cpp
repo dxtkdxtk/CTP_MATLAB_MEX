@@ -72,7 +72,7 @@ void __stdcall FunctionCallBackSet::OnDisconnect(void* pApi, CThostFtdcRspInfoFi
     CLock cl(&v_csErrorInfo);
     if(pRspInfo->ErrorID)
     {
-        v_errorInfo.push_back(string(__FUNCTION__) + string(pRspInfo->ErrorMsg));
+        v_errorInfo.push_back(string("[OnDisconnect]: ") + string(pRspInfo->ErrorMsg));
     }
 }
 
@@ -81,7 +81,7 @@ void __stdcall FunctionCallBackSet::OnErrRtnOrderAction(void* pTraderApi, CThost
     CLock cl(&v_csErrorInfo);
     if(pRspInfo->ErrorID)
     {
-        v_errorInfo.push_back(string(__FUNCTION__) + string(pRspInfo->ErrorMsg));
+        v_errorInfo.push_back(string("[OnErrRtnOrderAction]: ") + string(pRspInfo->ErrorMsg));
     }
 }
 
@@ -90,13 +90,17 @@ void __stdcall FunctionCallBackSet::OnErrRtnOrderInsert(void* pTraderApi, CThost
     CLock cl(&v_csErrorInfo);
     if(pRspInfo->ErrorID)
     {
-        v_errorInfo.push_back(string(__FUNCTION__) + string(pRspInfo->ErrorMsg));
+        v_errorInfo.push_back(string("[OnErrRtnOrderInsert]: ") + string(pRspInfo->ErrorMsg));
     }
 }
 
 void __stdcall FunctionCallBackSet::OnRspError(void* pApi, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
-
+    CLock cl(&v_csErrorInfo);
+    if(pRspInfo->ErrorID)
+    {
+        v_errorInfo.push_back(string("[OnRspError]: ") + string(pRspInfo->ErrorMsg));
+    }
 }
 
 void __stdcall FunctionCallBackSet::OnRspOrderAction(void* pTraderApi, CThostFtdcInputOrderActionField *pInputOrderAction, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
@@ -104,11 +108,11 @@ void __stdcall FunctionCallBackSet::OnRspOrderAction(void* pTraderApi, CThostFtd
     CLock cl(&v_csErrorInfo);
     if(pRspInfo->ErrorID == 0)
     {
-        v_errorInfo.push_back(string(__FUNCTION__) + string("撤单成功!"));
+        v_errorInfo.push_back(string("[OnRspOrderAction]: ") + string("撤单成功!"));
     }
     else
     {
-        v_errorInfo.push_back(string(__FUNCTION__) + string(pRspInfo->ErrorMsg));
+        v_errorInfo.push_back(string("[OnRspOrderAction]: ") + string(pRspInfo->ErrorMsg));
     }
 }
 
@@ -117,11 +121,11 @@ void __stdcall FunctionCallBackSet::OnRspOrderInsert(void* pTraderApi, CThostFtd
     CLock cl(&v_csErrorInfo);
     if(pRspInfo->ErrorID == 0)
     {
-        v_errorInfo.push_back(string(__FUNCTION__) + string(": 下单成功!"));
+        v_errorInfo.push_back(string("[OnRspOrderInsert]: ") + string("下单成功!"));
     }
     else
     {
-        v_errorInfo.push_back(string(__FUNCTION__) + string(pRspInfo->ErrorMsg));
+        v_errorInfo.push_back(string("[OnRspOrderInsert]: ") + string(pRspInfo->ErrorMsg));
     }
 }
 
@@ -130,11 +134,11 @@ void __stdcall FunctionCallBackSet::OnRspQryDepthMarketData(void* pTraderApi, CT
     CLock cl(&v_csErrorInfo);
     if(pRspInfo->ErrorID == 0)
     {
-        v_errorInfo.push_back(string(__FUNCTION__) + string(": 查询成功!"));
+        v_errorInfo.push_back(string("[OnRspQryDepthMarketData]: ") + string("查询成功!"));
     }
     else
     {
-        v_errorInfo.push_back(string(__FUNCTION__) + string(pRspInfo->ErrorMsg));
+        v_errorInfo.push_back(string("[OnRspQryDepthMarketData]: ") + string(pRspInfo->ErrorMsg));
     }
 }
 
@@ -151,7 +155,6 @@ void __stdcall FunctionCallBackSet::OnRspQryInstrument(void* pTraderApi, CThostF
         SetEvent(h_hasInst);
         bIsGetInst = true;
     }
-       
 
 }
 
@@ -188,22 +191,38 @@ void __stdcall FunctionCallBackSet::OnRspQryOrder(void* pTraderApi, CThostFtdcOr
     CLock cl(&v_csErrorInfo);
     if(pRspInfo->ErrorID == 0)
     {
-        v_errorInfo.push_back(string(__FUNCTION__) + string(": 查询委托单成功!"));
+        v_errorInfo.push_back(string("[OnRspQryOrder]: ") + string("查询委托单成功!"));
     }
     else
     {
-        v_errorInfo.push_back(string(__FUNCTION__) + string(pRspInfo->ErrorMsg));
+        v_errorInfo.push_back(string("[OnRspQryOrder]: ") + string(pRspInfo->ErrorMsg));
     }
 }
 
 void __stdcall FunctionCallBackSet::OnRspQryTrade(void* pTraderApi, CThostFtdcTradeField *pTrade, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
-
+    CLock cl(&v_csErrorInfo);
+    if(pRspInfo->ErrorID == 0)
+    {
+        v_errorInfo.push_back(string("[OnRspQryTrade]: ") + string("查询成交成功!"));
+    }
+    else
+    {
+        v_errorInfo.push_back(string("[OnRspQryTrade]: ") + string(pRspInfo->ErrorMsg));
+    }
 }
 
 void __stdcall FunctionCallBackSet::OnRspQryTradingAccount(void* pTraderApi, CThostFtdcTradingAccountField *pTradingAccount, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
-    
+    CLock cl(&v_csErrorInfo);
+    if(pRspInfo->ErrorID == 0)
+    {
+        v_errorInfo.push_back(string("[OnRspQryTradingAccount]: ") + string("查询交易账户成功!"));
+    }
+    else
+    {
+        v_errorInfo.push_back(string("[OnRspQryTradingAccount]: ") + string(pRspInfo->ErrorMsg));
+    }
 }
 
 void __stdcall FunctionCallBackSet::OnRtnDepthMarketData(void* pMdUserApi, CThostFtdcDepthMarketDataField *pDepthMarketData)
