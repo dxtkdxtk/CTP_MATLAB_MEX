@@ -46,6 +46,9 @@ map<pair<int, pair<int, string> >, CThostFtdcOrderField> FunctionCallBackSet::m_
 CRITICAL_SECTION FunctionCallBackSet::m_csPosition;
 map<pair<string, char>, CThostFtdcInvestorPositionField> FunctionCallBackSet::m_position;
 
+//错误信息
+CRITICAL_SECTION FunctionCallBackSet::v_csErrorInfo;
+vector<string> FunctionCallBackSet::v_errorInfo;
 
 
 void __stdcall FunctionCallBackSet::OnConnect(void* pApi, CThostFtdcRspUserLoginField *pRspUserLogin, ConnectionStatus result)
@@ -66,17 +69,29 @@ void __stdcall FunctionCallBackSet::OnConnect(void* pApi, CThostFtdcRspUserLogin
 
 void __stdcall FunctionCallBackSet::OnDisconnect(void* pApi, CThostFtdcRspInfoField *pRspInfo, ConnectionStatus step)
 {
-
+    CLock cl(&v_csErrorInfo);
+    if(pRspInfo->ErrorID)
+    {
+        v_errorInfo.push_back(string(__FUNCTION__) + string(pRspInfo->ErrorMsg));
+    }
 }
 
 void __stdcall FunctionCallBackSet::OnErrRtnOrderAction(void* pTraderApi, CThostFtdcOrderActionField *pOrderAction, CThostFtdcRspInfoField *pRspInfo)
 {
-
+    CLock cl(&v_csErrorInfo);
+    if(pRspInfo->ErrorID)
+    {
+        v_errorInfo.push_back(string(__FUNCTION__) + string(pRspInfo->ErrorMsg));
+    }
 }
 
 void __stdcall FunctionCallBackSet::OnErrRtnOrderInsert(void* pTraderApi, CThostFtdcInputOrderField *pInputOrder, CThostFtdcRspInfoField *pRspInfo)
 {
-
+    CLock cl(&v_csErrorInfo);
+    if(pRspInfo->ErrorID)
+    {
+        v_errorInfo.push_back(string(__FUNCTION__) + string(pRspInfo->ErrorMsg));
+    }
 }
 
 void __stdcall FunctionCallBackSet::OnRspError(void* pApi, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
@@ -86,17 +101,41 @@ void __stdcall FunctionCallBackSet::OnRspError(void* pApi, CThostFtdcRspInfoFiel
 
 void __stdcall FunctionCallBackSet::OnRspOrderAction(void* pTraderApi, CThostFtdcInputOrderActionField *pInputOrderAction, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
-
+    CLock cl(&v_csErrorInfo);
+    if(pRspInfo->ErrorID == 0)
+    {
+        v_errorInfo.push_back(string(__FUNCTION__) + string("撤单成功!"));
+    }
+    else
+    {
+        v_errorInfo.push_back(string(__FUNCTION__) + string(pRspInfo->ErrorMsg));
+    }
 }
 
 void __stdcall FunctionCallBackSet::OnRspOrderInsert(void* pTraderApi, CThostFtdcInputOrderField *pInputOrder, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
-
+    CLock cl(&v_csErrorInfo);
+    if(pRspInfo->ErrorID == 0)
+    {
+        v_errorInfo.push_back(string(__FUNCTION__) + string(": 下单成功!"));
+    }
+    else
+    {
+        v_errorInfo.push_back(string(__FUNCTION__) + string(pRspInfo->ErrorMsg));
+    }
 }
 
 void __stdcall FunctionCallBackSet::OnRspQryDepthMarketData(void* pTraderApi, CThostFtdcDepthMarketDataField *pDepthMarketData, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
-    
+    CLock cl(&v_csErrorInfo);
+    if(pRspInfo->ErrorID == 0)
+    {
+        v_errorInfo.push_back(string(__FUNCTION__) + string(": 查询成功!"));
+    }
+    else
+    {
+        v_errorInfo.push_back(string(__FUNCTION__) + string(pRspInfo->ErrorMsg));
+    }
 }
 
 void __stdcall FunctionCallBackSet::OnRspQryInstrument(void* pTraderApi, CThostFtdcInstrumentField *pInstrument, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
@@ -146,7 +185,15 @@ void __stdcall FunctionCallBackSet::OnRspQryInvestorPositionDetail(void* pTrader
 
 void __stdcall FunctionCallBackSet::OnRspQryOrder(void* pTraderApi, CThostFtdcOrderField *pOrder, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
-
+    CLock cl(&v_csErrorInfo);
+    if(pRspInfo->ErrorID == 0)
+    {
+        v_errorInfo.push_back(string(__FUNCTION__) + string(": 查询委托单成功!"));
+    }
+    else
+    {
+        v_errorInfo.push_back(string(__FUNCTION__) + string(pRspInfo->ErrorMsg));
+    }
 }
 
 void __stdcall FunctionCallBackSet::OnRspQryTrade(void* pTraderApi, CThostFtdcTradeField *pTrade, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
@@ -156,7 +203,7 @@ void __stdcall FunctionCallBackSet::OnRspQryTrade(void* pTraderApi, CThostFtdcTr
 
 void __stdcall FunctionCallBackSet::OnRspQryTradingAccount(void* pTraderApi, CThostFtdcTradingAccountField *pTradingAccount, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
-
+    
 }
 
 void __stdcall FunctionCallBackSet::OnRtnDepthMarketData(void* pMdUserApi, CThostFtdcDepthMarketDataField *pDepthMarketData)
@@ -178,8 +225,6 @@ void __stdcall FunctionCallBackSet::OnRtnOrder(void* pTraderApi, CThostFtdcOrder
     CLock cl(&m_csOrders);
     pair<int, pair<int, string> > ref = make_pair(pOrder->FrontID, make_pair(pOrder->SessionID, pOrder->OrderRef));
     m_orders[ref] = *pOrder;
-
-    
 }
 
 void __stdcall FunctionCallBackSet::OnRtnTrade(void* pTraderApi, CThostFtdcTradeField *pTrade)

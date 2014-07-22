@@ -54,6 +54,11 @@ public:
     //所有持仓
     static CRITICAL_SECTION m_csPosition;
     static map<pair<string, char>, CThostFtdcInvestorPositionField> m_position;
+    
+    //错误信息
+    static CRITICAL_SECTION v_csErrorInfo;
+    static vector<string> v_errorInfo;
+    
     FunctionCallBackSet()
     {
         bIsGetInst = false;
@@ -66,10 +71,12 @@ public:
         m_marketData.clear();
         m_orders.clear();
         m_position.clear();
+        v_errorInfo.clear();
         InitializeCriticalSection(&v_csInstInfo);
         InitializeCriticalSection(&m_csMarketData);
         InitializeCriticalSection(&m_csOrders);
         InitializeCriticalSection(&m_csPosition);
+        InitializeCriticalSection(&v_csErrorInfo);
     }
     ~FunctionCallBackSet()
     {
@@ -79,6 +86,7 @@ public:
         DeleteCriticalSection(&m_csMarketData);
         DeleteCriticalSection(&m_csOrders);
         DeleteCriticalSection(&m_csPosition);
+        DeleteCriticalSection(&v_csErrorInfo);
     }
     //获取行情信息
     CThostFtdcDepthMarketDataField &GetMarketData(string ins)
@@ -104,6 +112,12 @@ public:
         CLock cl(&v_csInstInfo);
         return v_instInfo;
     }
+    
+   vector<string> &GetErrorInfo()
+   {
+       CLock cl(&v_csErrorInfo);
+       return v_errorInfo;
+   }
     static void __stdcall OnConnect(void* pApi, CThostFtdcRspUserLoginField *pRspUserLogin, ConnectionStatus result);//连接后的结果状态
     static void __stdcall OnDisconnect(void* pApi, CThostFtdcRspInfoField *pRspInfo, ConnectionStatus step);//出错时所处的状态
     static void __stdcall OnErrRtnOrderAction(void* pTraderApi, CThostFtdcOrderActionField *pOrderAction, CThostFtdcRspInfoField *pRspInfo);

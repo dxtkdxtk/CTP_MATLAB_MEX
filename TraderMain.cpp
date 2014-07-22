@@ -249,7 +249,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, mxArray *prhs[])
                 plhs[0] = GetPositionData(Con->callbackSet->GetPosition(), mxArrayToString(prhs[1]));
             break;
         }
-        
         //判断是否连接
         case 10:
         {
@@ -258,6 +257,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, mxArray *prhs[])
             break;
         }
         
+        //查询错误信息
+        case 11:
+        {
+            CheckIsConnect();
+            plhs[0] = GetErrorInfo(Con->callbackSet->GetErrorInfo());
+            break;
+        }
         default:
             mexErrMsgTxt("没有找到相关操作");
     

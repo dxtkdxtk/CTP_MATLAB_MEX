@@ -272,4 +272,17 @@ mxArray *GetInstInfo(vector<CThostFtdcInstrumentField> &data)
     }
     return result;
 }
+
+mxArray *GetErrorInfo(vector<string> &data)
+{
+    mxArray *result;
+    int size = data.size();
+    mwSize dims[2] = {size, 1};
+    result = mxCreateCellArray(2, dims);
+    for(int i = 0; i < size; ++i)
+    {
+        mxSetCell(result, i, mxCreateString(data[i].c_str()) );
+    }
+    return result;
+}
 #endif
