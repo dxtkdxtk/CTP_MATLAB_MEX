@@ -15,5 +15,6 @@ Usage
 * GetPosition: 获取持仓
 * GetInstrument: 获取当日交易合约
 * GetMarketData: 获取合约行情数据
+* GetErrorInfo: 获取错误信息
 * OrderInsert: 下单
 * TraderMain: mex主入口
