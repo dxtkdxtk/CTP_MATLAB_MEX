@@ -22,6 +22,7 @@ History: see git log
 #include <list>
 #include <map>
 #include <string>
+#include <WinSock2.h>
 #include <Windows.h>
 
 using namespace std;

@@ -16,6 +16,7 @@ History: see git log
 #include "ThostTraderApi\ThostFtdcUserApiStruct.h"
 
 #include <list>
+#include <WinSock2.h>
 #include <Windows.h>
 #include <map>
 #include <vector>

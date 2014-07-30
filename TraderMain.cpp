@@ -1,11 +1,11 @@
 /*****************************************************************************
-File name: TraderMain.cpp
-Description: CTP for matlab mex. Designed a series of operations to operate the CTP
-Author: jebin
-Version: 0.0.1
-Date: 2014/07/10
-History: see git log
-*****************************************************************************/
+ * File name: TraderMain.cpp
+ * Description: CTP for matlab mex. Designed a series of operations to operate the CTP
+ * Author: jebin
+ * Version: 1.0
+ * Date: 2014/07/10
+ * History: see git log
+ *****************************************************************************/
 
 #include "Connection.h"
 #include "mxStructTool.h"
@@ -46,11 +46,11 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, mxArray *prhs[])
                 Con = new Connection();
                 CheckIsConnect();
                 Con->readInifile(".\\server.ini", mxArrayToString(prhs[1]));
-                Con->td->Connect(Con->streamPath, 
-                        Con->tdServer, 
-                        Con->brokerId, 
+                Con->td->Connect(Con->streamPath,
+                        Con->tdServer,
+                        Con->brokerId,
                         Con->investorId,
-                        Con->password, 
+                        Con->password,
                         THOST_TERT_RESTART, "", "");
                 WaitForSingleObject(Con->callbackSet->h_connected, 5000);
                 if(Con->callbackSet->bIsTdConnected == false)
@@ -62,10 +62,10 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, mxArray *prhs[])
                 else
                 {
                     mexPrintf("交易端连接成功\n");
-                    Con->md->Connect(Con->streamPath, 
-                            Con->mdServer, 
-                            Con->brokerId, 
-                            Con->investorId, 
+                    Con->md->Connect(Con->streamPath,
+                            Con->mdServer,
+                            Con->brokerId,
+                            Con->investorId,
                             Con->password);
                     WaitForSingleObject(Con->callbackSet->h_connected, 5000);
                     if(Con->callbackSet->bIsMdConnected == false)
@@ -147,17 +147,23 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, mxArray *prhs[])
         case 6:
         {
             CheckIsConnect();
+            map<pair<int, pair<int, string> >, CThostFtdcOrderField> &orders = Con->callbackSet->m_orders;
             string inst = mxArrayToString(prhs[1]);
             string direction = mxArrayToString(prhs[2]);
             string offsetFlag = mxArrayToString(prhs[3]);
             double volume = mxGetScalar(prhs[4]);
             double price = mxGetScalar(prhs[5]);
-            int ref = Con->td->ReqOrderInsert(inst, direction[0], offsetFlag.c_str(), "1", (int)volume, price, 
-                    THOST_FTDC_OPT_LimitPrice, THOST_FTDC_TC_GFD, THOST_FTDC_CC_Immediately, 
+            int ref = Con->td->ReqOrderInsert(inst, direction[0], offsetFlag.c_str(), "1", (int)volume, price,
+                    THOST_FTDC_OPT_LimitPrice, THOST_FTDC_TC_GFD, THOST_FTDC_CC_Immediately,
                     0, THOST_FTDC_VC_AV);
+            char buf[105];
+            itoa (ref,buf,10);
+            pair<int, pair<int, string> > order =
+                    make_pair(Con->td->m_RspUserLogin.FrontID, make_pair(Con->td->m_RspUserLogin.SessionID, string(buf)));
+            while(orders.find(order) == orders.end());
             plhs[0] = mxCreateDoubleScalar(ref);
             break;
-        }   
+        }
         
         //获取所有报单信息
         case 7:
@@ -174,12 +180,15 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, mxArray *prhs[])
             else if(nrhs == 2)
             {
                 string ref = mxArrayToString(prhs[1]);
-                pair<int, pair<int, string> > order = 
-                    make_pair(Con->td->m_RspUserLogin.FrontID, make_pair(Con->td->m_RspUserLogin.SessionID, ref));
+                pair<int, pair<int, string> > order =
+                        make_pair(Con->td->m_RspUserLogin.FrontID, make_pair(Con->td->m_RspUserLogin.SessionID, ref));
                 if(orders.find(order) != orders.end())
                     plhs[0] = GetOrderData(Con->callbackSet->GetOrderInfo(), order);
                 else
+                {
+                    plhs[0] = mxCreateDoubleScalar(0);
                     mexWarnMsgTxt("未存在此报单\n");
+                }
             }
             //查询所有连接中指定报单
             else if(nrhs == 4)
@@ -187,12 +196,15 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, mxArray *prhs[])
                 int frontid = (int)mxGetScalar(prhs[1]);
                 int session = (int)mxGetScalar(prhs[2]);
                 string ref = mxArrayToString(prhs[3]);
-                pair<int, pair<int, string> > order = 
+                pair<int, pair<int, string> > order =
                         make_pair(frontid, make_pair(session, ref));
                 if(orders.find(order) != orders.end())
                     plhs[0] = GetOrderData(Con->callbackSet->GetOrderInfo(), order);
                 else
+                {
+                    plhs[0] = mxCreateDoubleScalar(0);
                     mexWarnMsgTxt("未存在此报单\n");
+                }
             }
             break;
         }
@@ -213,7 +225,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, mxArray *prhs[])
                 else
                 {
                     string ref = mxArrayToString(prhs[1]);
-                    pair<int, pair<int, string> > order = 
+                    pair<int, pair<int, string> > order =
                             make_pair(Con->td->m_RspUserLogin.FrontID, make_pair(Con->td->m_RspUserLogin.SessionID, ref));
                     if(orders.find(order) != orders.end())
                         Con->td->ReqOrderAction(&orders[order]);
@@ -226,7 +238,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, mxArray *prhs[])
                 int frontid = (int)mxGetScalar(prhs[1]);
                 int session = (int)mxGetScalar(prhs[2]);
                 string ref = mxArrayToString(prhs[3]);
-                pair<int, pair<int, string> > order = 
+                pair<int, pair<int, string> > order =
                         make_pair(frontid, make_pair(session, ref));
                 if(orders.find(order) != orders.end())
                     Con->td->ReqOrderAction(&orders[order]);
@@ -245,7 +257,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, mxArray *prhs[])
             if(nrhs == 1)
                 plhs[0] = GetPositionData(Con->callbackSet->GetPosition());
             // 查询指定持仓
-            else if(nrhs == 2)      
+            else if(nrhs == 2)
                 plhs[0] = GetPositionData(Con->callbackSet->GetPosition(), mxArrayToString(prhs[1]));
             break;
         }
@@ -266,7 +278,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, mxArray *prhs[])
         }
         default:
             mexErrMsgTxt("没有找到相关操作");
-    
+            
     }
-
+    
 }
