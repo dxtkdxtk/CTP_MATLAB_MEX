@@ -160,8 +160,18 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, mxArray *prhs[])
             itoa (ref,buf,10);
             pair<int, pair<int, string> > order =
                     make_pair(Con->td->m_RspUserLogin.FrontID, make_pair(Con->td->m_RspUserLogin.SessionID, string(buf)));
-            while(orders.find(order) == orders.end());
-            plhs[0] = mxCreateDoubleScalar(ref);
+            int timeout = 0;
+            while(orders.find(order) == orders.end())
+            {
+                ++timeout;
+                Sleep(1);
+                if(timeout > 3000)
+                    break;
+            }
+            if(timeout > 3000)
+                plhs[0] = mxCreateDoubleScalar(-1);
+            else
+                plhs[0] = mxCreateDoubleScalar(ref);
             break;
         }
         
