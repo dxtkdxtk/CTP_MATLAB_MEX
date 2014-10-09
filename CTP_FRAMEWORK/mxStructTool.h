@@ -53,6 +53,54 @@ mxArray *GetMarketData(const CThostFtdcDepthMarketDataField &data)
     return result;
 }
 
+mxArray *GetMarketData(set<string> &subInst, map<string, CThostFtdcDepthMarketDataField> &marketdata)
+{
+    int size = subInst.size();
+    mwSize dims[2] = {size, 1};
+    const char *field_names[] = {"TradingDay", "InstrumentID", "LastPrice", "PreSettlementPrice",\
+            "PreClosePrice", "PreOpenInterest", "OpenPrice", "HighestPrice", \
+            "LowestPrice", "Volume", "OpenInterest", "ClosePrice", "SettlementPrice",\
+            "UpperLimitPrice", "LowerLimitPrice", "PreDelta", "CurrDelta", "UpdateTime", \
+            "BidPrice1", "BidVolume1", "AskPrice1", "AskVolume1", "AveragePrice", "ActionDay",
+    "UpdateMillisec"};
+    mxArray *result = mxCreateStructArray(2, dims, sizeof(field_names)/sizeof(*field_names), field_names);
+    int i = 0;
+    set<string>::iterator iter;
+    CThostFtdcDepthMarketDataField data;
+    for(iter = subInst.begin(); iter != subInst.end(); ++iter)
+    {
+        data = marketdata[string(iter->c_str())];
+//         memcpy(&data, &marketdata[iter->c_str()], sizeof(CThostFtdcDepthMarketDataField));
+        mxSetField(result, i, "TradingDay", mxCreateString(data.TradingDay));
+        mxSetField(result, i, "InstrumentID", mxCreateString(data.InstrumentID));
+        mxSetField(result, i, "PreSettlementPrice", mxCreateDoubleScalar(data.PreSettlementPrice));
+        mxSetField(result, i, "PreClosePrice", mxCreateDoubleScalar(data.PreClosePrice));
+        mxSetField(result, i, "PreOpenInterest", mxCreateDoubleScalar(data.PreOpenInterest));
+        mxSetField(result, i, "OpenPrice", mxCreateDoubleScalar(data.OpenPrice));
+        mxSetField(result, i, "HighestPrice", mxCreateDoubleScalar(data.HighestPrice));
+        mxSetField(result, i, "LowestPrice", mxCreateDoubleScalar(data.LowestPrice));
+        mxSetField(result, i, "LastPrice", mxCreateDoubleScalar(data.LastPrice));
+        mxSetField(result, i, "Volume", mxCreateDoubleScalar(data.Volume));
+        mxSetField(result, i, "OpenInterest", mxCreateDoubleScalar(data.OpenInterest));
+        mxSetField(result, i, "ClosePrice", mxCreateDoubleScalar(data.ClosePrice));
+        mxSetField(result, i, "SettlementPrice", mxCreateDoubleScalar(data.SettlementPrice));
+        mxSetField(result, i, "UpperLimitPrice", mxCreateDoubleScalar(data.UpperLimitPrice));
+        mxSetField(result, i, "LowerLimitPrice", mxCreateDoubleScalar(data.LowerLimitPrice));
+        mxSetField(result, i, "PreDelta", mxCreateDoubleScalar(data.PreDelta));
+        mxSetField(result, i, "CurrDelta", mxCreateDoubleScalar(data.CurrDelta));
+        mxSetField(result, i, "UpdateTime", mxCreateString(data.UpdateTime));
+        mxSetField(result, i, "BidPrice1", mxCreateDoubleScalar(data.BidPrice1));
+        mxSetField(result, i, "BidVolume1", mxCreateDoubleScalar(data.BidVolume1));
+        mxSetField(result, i, "AskPrice1", mxCreateDoubleScalar(data.AskPrice1));
+        mxSetField(result, i, "AskVolume1", mxCreateDoubleScalar(data.AskVolume1));
+        mxSetField(result, i, "AveragePrice", mxCreateDoubleScalar(data.AveragePrice));
+        mxSetField(result, i, "ActionDay", mxCreateString(data.ActionDay));
+        mxSetField(result, i, "UpdateMillisec", mxCreateDoubleScalar(data.UpdateMillisec));
+        ++i;
+    }
+    return result;
+}
+
 //转换报单数据
 mxArray *GetOrderData(map<pair<int, pair<int, string> >, CThostFtdcOrderField> &data, pair<int, pair<int, string> > &order)
 {

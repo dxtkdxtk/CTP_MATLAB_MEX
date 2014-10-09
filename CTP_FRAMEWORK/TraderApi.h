@@ -187,8 +187,6 @@ private:
     ConnectionStatus			m_status;				//连接状态
     volatile LONG				m_lRequestID;			//请求ID,得保持自增
 
-    
-
     CRITICAL_SECTION			m_csOrderRef;
     int							m_nMaxOrderRef;			//报单引用，用于区分报单，保持自增
     CThostFtdcTraderApi*		m_pApi;	//交易API

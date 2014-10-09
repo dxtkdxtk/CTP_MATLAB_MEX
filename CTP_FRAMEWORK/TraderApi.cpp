@@ -838,3 +838,4 @@ void TraderApi::OnRtnInstrumentStatus(CThostFtdcInstrumentStatusField *pInstrume
     if (m_msgQueue)
         m_msgQueue->Input_OnRtnInstrumentStatus(this, pInstrumentStatus);
 }
+

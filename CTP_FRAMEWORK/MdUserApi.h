@@ -33,7 +33,7 @@ public:
     void RegisterMsgQueue(CTPMsgQueue* pMsgQueue);//注册回调信息队列
     void Subscribe(const string &strInstrumentIDs);//订阅合约
     void Unsubscribe(const string &strInstrumentIDs);//
-
+    set<string> GetSubInst(); //获取订阅所有合约
 private:
     void Subscribe(const set<string> &setInstrumentIDs);
     void ReqUserLogin();

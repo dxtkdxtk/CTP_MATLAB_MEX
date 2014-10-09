@@ -95,6 +95,12 @@ public:
         CLock cl(&m_csMarketData);
         return m_marketData[ins];
     }
+    
+    map<string, CThostFtdcDepthMarketDataField> &GetAllMarketData()
+    {
+        CLock cl(&m_csMarketData);
+        return m_marketData;
+    }
     //获取有效单信息
     map<pair<int, pair<int, string> >, CThostFtdcOrderField> &GetOrderInfo()
     {
@@ -119,6 +125,7 @@ public:
        CLock cl(&v_csErrorInfo);
        return v_errorInfo;
    }
+   
     static void __stdcall OnConnect(void* pApi, CThostFtdcRspUserLoginField *pRspUserLogin, ConnectionStatus result);//连接后的结果状态
     static void __stdcall OnDisconnect(void* pApi, CThostFtdcRspInfoField *pRspInfo, ConnectionStatus step);//出错时所处的状态
     static void __stdcall OnErrRtnOrderAction(void* pTraderApi, CThostFtdcOrderActionField *pOrderAction, CThostFtdcRspInfoField *pRspInfo);

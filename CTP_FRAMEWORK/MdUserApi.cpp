@@ -326,3 +326,8 @@ void MdUserApi::OnRspError(CThostFtdcRspInfoField *pRspInfo, int nRequestID, boo
     if (m_msgQueue)
         m_msgQueue->Input_OnRspError(this, pRspInfo, nRequestID, bIsLast);
 }
+
+set<string> MdUserApi::GetSubInst()
+{
+    return m_setInstrumentIDs;
+}

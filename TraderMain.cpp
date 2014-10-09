@@ -138,8 +138,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, mxArray *prhs[])
         case 5:
         {
             CheckIsConnect();
-            string inst = mxArrayToString(prhs[1]);
-            plhs[0] = GetMarketData(Con->callbackSet->GetMarketData(inst));
+            if(nrhs == 1)
+                plhs[0] = GetMarketData(Con->md->GetSubInst(), Con->callbackSet->GetAllMarketData());
+            else
+            {
+                string inst = mxArrayToString(prhs[1]);
+                plhs[0] = GetMarketData(Con->callbackSet->GetMarketData(inst));
+            }
             break;
         }
         
