@@ -1,20 +1,23 @@
+
+é¡¹ç›®å·²ä¸å†ç»´æŠ¤ï¼Œå…¨éƒ¨è½¬ç§»è‡³CTP_Center
+============
 ctp for matlab mex
 ============
 Usage
 -------
 
-####´Ë°æ±¾ÔÚ32Î»matlab R2014a±àÒëÍ¨¹ı£¬mexÊ¹ÓÃvs2013 C++¡£
-####¾ßÌå²ÎÊı²ÎÕÕÎÄ¼ş×¢ÊÍ¡£
+####æ­¤ç‰ˆæœ¬åœ¨32ä½matlab R2014aç¼–è¯‘é€šè¿‡ï¼Œmexä½¿ç”¨vs2013 C++ã€‚
+####å…·ä½“å‚æ•°å‚ç…§æ–‡ä»¶æ³¨é‡Šã€‚
 
-* make: ±àÒëÏîÄ¿
-* server.iniÖĞÉèÖÃ·şÎñÆ÷£¬ÆÚÉÌ£¬ÕËºÅ£¬Êı¾İÁ÷Â·¾¶¡£
-* CTPConnect: Á¬½ÓCTP
-* CTPDisconnect: ¶Ï¿ªCTP
-* Subscribe: ¶©ÔÄºÏÔ¼
-* GetOrder: »ñÈ¡±¨µ¥
-* GetPosition: »ñÈ¡³Ö²Ö
-* GetInstrument: »ñÈ¡µ±ÈÕ½»Ò×ºÏÔ¼
-* GetMarketData: »ñÈ¡ºÏÔ¼ĞĞÇéÊı¾İ
-* GetErrorInfo: »ñÈ¡´íÎóĞÅÏ¢
-* OrderInsert: ÏÂµ¥
-* TraderMain: mexÖ÷Èë¿Ú
+* make: ç¼–è¯‘é¡¹ç›®
+* server.iniä¸­è®¾ç½®æœåŠ¡å™¨ï¼ŒæœŸå•†ï¼Œè´¦å·ï¼Œæ•°æ®æµè·¯å¾„ã€‚
+* CTPConnect: è¿æ¥CTP
+* CTPDisconnect: æ–­å¼€CTP
+* Subscribe: è®¢é˜…åˆçº¦
+* GetOrder: è·å–æŠ¥å•
+* GetPosition: è·å–æŒä»“
+* GetInstrument: è·å–å½“æ—¥äº¤æ˜“åˆçº¦
+* GetMarketData: è·å–åˆçº¦è¡Œæƒ…æ•°æ®
+* GetErrorInfo: è·å–é”™è¯¯ä¿¡æ¯
+* OrderInsert: ä¸‹å•
+* TraderMain: mexä¸»å…¥å£
